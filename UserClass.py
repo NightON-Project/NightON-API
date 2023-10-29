@@ -19,12 +19,13 @@ class UserClass(BaseModel):
 
 app = FastAPI()
 
-# Configuration de la connexion à la base de données MySQL : mettre dans un YAML/json
+# Configuration de la connexion à la base de données SQL Server : mettre les configs dans un YAML/json et créer un docker pour tester la bdd en localhost
 db_config = {
     "host": "localhost",
-    "user": "votre_utilisateur",
-    "password": "votre_mot_de_passe",
-    "database": "votre_base_de_donnees"
+    "port": "2309",
+    "user": "root",
+    "password": "root",
+    "database": "test_nighton"
 }
 
 @app.post("/enregistrer-utilisateur/")
@@ -35,7 +36,7 @@ async def createUser(user: UserClass):
         cursor = conn.cursor()
 
         # Insérez les données d'authentification dans la base de données
-        insert_query = "INSERT INTO UserTable (uid, email, displayName) VALUES (%s, %s, %s)"
+        insert_query = "INSERT INTO userdata (user_id, user_email, display_user_name) VALUES (%s, %s, %s)"
         insert_values = (user.uid, user.email, user.displayName)
         cursor.execute(insert_query, insert_values)
 
@@ -48,9 +49,11 @@ async def createUser(user: UserClass):
 
     except Exception as e:
         return {"error": str(e)}
+        #   "error": "1054 (42S22): Unknown column 'uid' in 'field list'" -> la colonne n'existe pas dans la table cible aka mauvais nom
+
     
 
-@app.get("/afficher-utilisateur")
+@app.get("/afficher-utilisateur/")
 async def readUser():
     """
     """
