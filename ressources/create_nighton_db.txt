@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS userdata_v1011_1621(id_user VARCHAR(80) PRIMARY KEY, name_user VARCHAR(80), birthdate_user VARCHAR(80), email_user VARCHAR(80), telephone_user VARCHAR(80), pays VARCHAR(80), code_postal VARCHAR(80), ville VARCHAR(80), numero_rue VARCHAR(80), nom_rue VARCHAR(80), complement_adresse_1 VARCHAR(80), complement_adresse_2 VARCHAR(80));
