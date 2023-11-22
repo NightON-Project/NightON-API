@@ -10,11 +10,11 @@ class ClassUserData(BaseModel):
     birthdate_user: str
     email_user: str
     telephone_user: str
-    pays: str
-    code_postal: str
-    ville: str
-    numero_rue: str
-    nom_rue: str
+    pays: Optional[str] = None
+    code_postal: Optional[str] = None
+    ville: Optional[str] = None
+    numero_rue: Optional[str] = None
+    nom_rue: Optional[str] = None
     complement_adresse_1: Optional[str] = None
     complement_adresse_2: Optional[str] = None
     # Ajoutez d'autres champs au besoin

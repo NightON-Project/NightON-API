@@ -1,14 +1,16 @@
 import json
+import uuid
 import uvicorn
 import mysql.connector
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from utils.entities.UserData import ClassUserData
+#from utils.debugTools import scriptLogger
 
 app = FastAPI()
 
 
-def connect_to_mysql_db(MODE='local'):
+def connect_to_mysql_db(MODE='test'):
     """
     Configuration de la connexion à la base de données SQL Server
     Les configs sont dans un json et créer un docker pour tester la bdd en localhost
@@ -39,7 +41,7 @@ def execute_creation_script(PATH_TO_SQL_CREA_SCRIPT='./ressources/create_nighton
     
     try:
         print(">> DB creation...")  
-        conn = connect_to_mysql_db(MODE='local')
+        conn = connect_to_mysql_db(MODE='test')
         cursor = conn.cursor()
         cursor.execute(crea_db_query)
         print('-> DB created !\n')
@@ -51,23 +53,7 @@ def execute_creation_script(PATH_TO_SQL_CREA_SCRIPT='./ressources/create_nighton
 # Route pour creer un nouveau user
 @app.post("/users/")
 async def createUser(user: ClassUserData):
-    """
-    Example Value
-  {
-    "id_user": "010",
-    "name_user": "Sophie Martin",
-    "birthdate_user": "12/05/1998",
-    "email_user": "sophie.martin@testeur.com",
-    "telephone_user": "06 12 34 56 78",
-    "pays": "France",
-    "code_postal": "75000",
-    "ville": "Paris",
-    "numero_rue": "12",
-    "nom_rue": "Rue de la République",
-    "complement_adresse_1": "",
-    "complement_adresse_2": ""
-  }
-    """
+
     try:
         # connexion à la base de données MySQL
         conn = connect_to_mysql_db()
@@ -77,8 +63,9 @@ async def createUser(user: ClassUserData):
         execute_creation_script()
 
         # Insérez les données d'authentification dans la base de données
-        insert_query = "INSERT INTO userdata_v1011_1621 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        insert_values = (user.id_user,
+        i = str(uuid.uuid4())
+        insert_query = "INSERT INTO userdata_v1 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        insert_values = (i,
                          user.name_user,
                          user.birthdate_user,
                          user.email_user,
@@ -114,7 +101,7 @@ async def readUser(id_user: str):
     cursor = conn.cursor()
 
 
-    read_query = "SELECT * FROM userdata_v1011_1621 WHERE id_user=%s"
+    read_query = "SELECT * FROM userdata_v1 WHERE id_user=%s"
     read_values = (id_user,) # id_user renseigné dans la def de la fonction 
     
     cursor.execute(read_query, read_values)
@@ -151,7 +138,7 @@ async def updateUser(user: ClassUserData):
         # verifier que le user existe
 
         # màj ses data
-        update_query = "UPDATE userdata_v1011_1621 SET name_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE id_user=%s"
+        update_query = "UPDATE userdata_v1 SET name_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE id_user=%s"
         update_values = (user.name_user,
                         user.birthdate_user,
                         user.email_user,
@@ -182,7 +169,7 @@ async def deleteUser(id_user: str):
         # connexion à la base de données MySQL
         conn = connect_to_mysql_db()
         cursor = conn.cursor()
-        delete_query = "DELETE FROM userdata_v1011_1621 WHERE id_user=%s"
+        delete_query = "DELETE FROM userdata_v1 WHERE id_user=%s"
         delete_values = (id_user,)
         cursor.execute(delete_query, delete_values)
         conn.commit()
