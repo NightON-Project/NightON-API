@@ -6,10 +6,11 @@ class ClassUserData(BaseModel):
     Classe qui valide les données utilisateur. 
     """
     id_user: str
-    name_user: str
-    birthdate_user: str
+    firstname_user: str
+    lastname_user: str
+    birthdate_user: Optional[str] = None
     email_user: str
-    telephone_user: str
+    telephone_user: Optional[str] = None
     pays: Optional[str] = None
     code_postal: Optional[str] = None
     ville: Optional[str] = None

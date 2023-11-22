@@ -64,9 +64,10 @@ async def createUser(user: ClassUserData):
 
         # Insérez les données d'authentification dans la base de données
         i = str(uuid.uuid4())
-        insert_query = "INSERT INTO userdata_v1 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        insert_query = "INSERT INTO userdata_v1 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         insert_values = (i,
-                         user.name_user,
+                         user.firstname_user,
+                         user.lastname_user,
                          user.birthdate_user,
                          user.email_user,
                          user.telephone_user,
@@ -93,16 +94,16 @@ async def createUser(user: ClassUserData):
 
 
 # route pour afficher un utilisateur 
-@app.get("/users/{id_user}", response_model=ClassUserData)
-async def readUser(id_user: str):
+@app.get("/users/{email_user}", response_model=ClassUserData)
+async def readUser(email_user: str):
 
     # connexion à la base de données MySQL
     conn = connect_to_mysql_db()
     cursor = conn.cursor()
 
 
-    read_query = "SELECT * FROM userdata_v1 WHERE id_user=%s"
-    read_values = (id_user,) # id_user renseigné dans la def de la fonction 
+    read_query = "SELECT * FROM userdata_v1 WHERE email_user=%s"
+    read_values = (email_user,) # email_user renseigné dans la def de la fonction 
     
     cursor.execute(read_query, read_values)
     user = cursor.fetchone()
@@ -112,21 +113,22 @@ async def readUser(id_user: str):
         raise HTTPException(status_code=404, detail="User not found")
     else:
         user = {'id_user': user[0], 
-                'name_user': user[1],
-                'birthdate_user': user[2],
-                'email_user': user[3],
-                'telephone_user': user[4],
-                'pays': user[5],
-                'code_postal': user[6],
-                'ville': user[7],
-                'numero_rue': user[8],
-                'nom_rue': user[9],
-                'complement_adresse_1': user[10],
-                'complement_adresse_2': user[11]}
+                'firstname_user': user[1],
+                'lastname_user': user[2],
+                'birthdate_user': user[3],
+                'email_user': user[4],
+                'telephone_user': user[5],
+                'pays': user[6],
+                'code_postal': user[7],
+                'ville': user[8],
+                'numero_rue': user[9],
+                'nom_rue': user[10],
+                'complement_adresse_1': user[11],
+                'complement_adresse_2': user[12]}
     return user
 
 # route pour maj les donnees personnelles d'un user
-@app.put("/users/{user_id}")
+@app.put("/users/{email_user}")
 async def updateUser(user: ClassUserData):
     """
     """
@@ -138,8 +140,9 @@ async def updateUser(user: ClassUserData):
         # verifier que le user existe
 
         # màj ses data
-        update_query = "UPDATE userdata_v1 SET name_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE id_user=%s"
-        update_values = (user.name_user,
+        update_query = "UPDATE userdata_v1 SET firstname_user=%s, lastname_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE email_user=%s"
+        update_values = (user.firstname_user,
+                        user.lastname_user,
                         user.birthdate_user,
                         user.email_user,
                         user.telephone_user,
@@ -150,7 +153,7 @@ async def updateUser(user: ClassUserData):
                         user.nom_rue,
                         user.complement_adresse_1,
                         user.complement_adresse_2,
-                        user.id_user)
+                        user.email_user)
 
         cursor.execute(update_query, update_values)
         conn.commit()
@@ -161,20 +164,20 @@ async def updateUser(user: ClassUserData):
         return {"error": str(e)}
 
 # route pour delete
-@app.delete("/users/{id_user}")
-async def deleteUser(id_user: str):
+@app.delete("/users/{email_user}")
+async def deleteUser(email_user: str):
     """
     """
     try: 
         # connexion à la base de données MySQL
         conn = connect_to_mysql_db()
         cursor = conn.cursor()
-        delete_query = "DELETE FROM userdata_v1 WHERE id_user=%s"
-        delete_values = (id_user,)
+        delete_query = "DELETE FROM userdata_v1 WHERE email_user=%s"
+        delete_values = (email_user,)
         cursor.execute(delete_query, delete_values)
         conn.commit()
         cursor.close()
-        return {'message : ' f'Utilisateur {id_user} supprimé !'}
+        return {'message : ' f'Utilisateur {email_user} supprimé !'}
     except Exception as e:
         return {f'error : str({e})'}
 
