@@ -132,4 +132,3 @@ class Mailer:
 
         with buffer:
             return str(buffer.read().decode('utf-8')), True
-
