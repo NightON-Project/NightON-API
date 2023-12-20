@@ -11,6 +11,5 @@ mailer.sendEmail("titouan.schotte@gmail.com", "MAIL TEST", "test", {
 
 # Envoi du mail de code.
 code, operationResult = mailer.sendEmailCode("titouan.schotte@gmail.com")
-
 if operationResult:
     print(code)
