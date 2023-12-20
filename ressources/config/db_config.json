@@ -1,0 +1,33 @@
+{
+    "use": "test",
+    "local" : 
+    {
+        "host": "localhost",
+        "port": "2309",
+        "user": "root",
+        "password": "root",
+        "database": "test_nighton"
+    },
+    "local_titoune" : {
+      "host" : "localhost",
+      "port" : "3306",
+      "user" : "root",
+      "password" : "",
+      "database" : "nighton"
+    },
+    "test" : {
+      "host" : "89.117.169.103",
+      "port" : "3306",
+      "user" : "u169130812_dev",
+      "password" : "NightON2023*",
+      "database" : "u169130812_nighton_test"
+    },
+    "dev" : {
+      "host" : "89.117.169.103",
+      "port" : "3306",
+      "user" : "u169130812_admin",
+      "password" : "NightON2023*",
+      "database" : "u169130812_nighton_dev"
+    }
+}
+  
