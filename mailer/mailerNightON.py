@@ -48,19 +48,18 @@ class Mailer:
     def isValidConfig(self):
         return bool(self.data)
 
-    def sendEmailCode(self, emailDestination: str) -> int:
+    def sendEmailCode(self, emailDestination: str) -> (int, bool):
         code = randint(10000, 99999)
-        self.sendEmail(emailDestination, TITTLE_CODE_VERIF, HTML_FILE_CODE_VERIF, {"code" : code})
-        return code
+        return code, self.sendEmail(emailDestination, TITTLE_CODE_VERIF, HTML_FILE_CODE_VERIF, {"code" : code})
 
-    def sendEmail(self, emailDestination: str, mailTitle: str, mailContentTemplateFile: str, placeholders: dict = {}):
+    def sendEmail(self, emailDestination: str, mailTitle: str, mailContentTemplateFile: str, placeholders: dict = {}) -> bool:
         from_address = self.data["username"]
         message = MIMEMultipart()
         message['From'] = from_address
         message['To'] = emailDestination
         message['Subject'] = mailTitle
 
-        body = self.readMailTemplate(mailContentTemplateFile)
+        body, state = self.readMailTemplate(mailContentTemplateFile)
         for k, v in placeholders.items():
             body = body.replace("{" + k + "}", str(v))
 
@@ -69,6 +68,7 @@ class Mailer:
 
         print(f"<NIGHTON_MAILER> : mail {mailContentTemplateFile}.html envoyé à {emailDestination} avec succès")
         self.server.sendmail(self.data["username"], emailDestination, message.as_string())
+        return state
 
     def refreshConnection(self):
         while True:
@@ -85,12 +85,12 @@ class Mailer:
         except:
             pass
 
-    def readMailTemplate(self, mailFile: str) -> str:
+    def readMailTemplate(self, mailFile: str) -> (str, bool):
         try:
             buffer = open(f"mails/{mailFile}.html", 'rb')
         except OSError:
             print(f"<NIGHTON_MAILER> : Impossible d'ouvrir le fichier mails/{mailFile}.html")
-            return ""
+            return "", False
 
         with buffer:
-            return str(buffer.read().decode('utf-8'))
+            return str(buffer.read().decode('utf-8')), True
