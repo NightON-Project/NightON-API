@@ -14,4 +14,3 @@ code, operationResult = mailer.sendEmailCode("titouan.schotte@gmail.com")
 
 if operationResult:
     print(code)
-
