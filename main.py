@@ -1,185 +1,108 @@
-import json
-import uuid
 import uvicorn
-import mysql.connector
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from utils.entities.UserData import ClassUserData
-#from utils.debugTools import scriptLogger
+import sys
+from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
+from utils.entities import UserDataM
+from utils.controller import UserDataC
+
+from utils.entities import TenantM
+from utils.controller import TenantC
 
 app = FastAPI()
 
+Privacy_Policy = '''
+Confidentialité et sécurité : Nous accordons la priorité à la protection de vos informations et avons mis en place des mesures de sécurité appropriées pour prévenir l'accès, la divulgation ou la modification non autorisés. Seul le personnel autorisé a accès à ces informations, et il est lié par des obligations de confidentialité.
 
-def connect_to_mysql_db(MODE='test'):
+Restrictions d'accès et d'exploration : L'accès non autorisé à notre application, y compris toute tentative d'exploration de son fonctionnement en accédant à la racine de l'API, est strictement interdit. Toute violation de cette politique de confidentialité ou de nos conditions d'utilisation peut entraîner des mesures disciplinaires, y compris la résiliation du compte et, si nécessaire, des poursuites judiciaires.
+
+Conservation des informations : Nous conservons vos informations aussi longtemps que nécessaire pour atteindre les objectifs énoncés dans cette politique de confidentialité, sauf si une période de conservation plus longue est requise ou autorisée par la loi.
+
+Changements à la politique de confidentialité : Nous nous réservons le droit de modifier cette politique de confidentialité à tout moment. Tous les changements seront effectifs dès leur publication sur notre site Web ou dans l'application. Il est de votre responsabilité de consulter régulièrement cette politique de confidentialité pour toute mise à jour.
+
+Consentement : En utilisant notre application, vous consentez à la collecte, à l'utilisation et à la divulgation de vos informations conformément à cette politique de confidentialité.
+
+Dernière mise à jour : 06/12/2023
+'''
+
+@app.get('/', response_model=dict)
+async def start():
     """
-    Configuration de la connexion à la base de données SQL Server
-    Les configs sont dans un json et créer un docker pour tester la bdd en localhost
-    @params MODE : str : 'local' | 'test' | 'prod'
-    @return Objconn : mysql.connector.connector() object instance
+    Point de départ de nightON API.
     """
-    print('>> Connexion..')
-    PATH_TO_DB_CONFIG: str = './ressources/secret/db_config.json'
-
-    with open(PATH_TO_DB_CONFIG, "r") as f:
-        db_infos = json.load(f)
-
-    db_config = db_infos[MODE]
-
-    try:
-        ObjectMySQLConn = mysql.connector.connect(**db_config)
-        print(f"-> Connected sucessfully to {MODE} database !\n")
-    except Exception as e:
-        print(f"Erreur dans connect_to_db() en MODE : {MODE} ::: {e}")
-
-    return ObjectMySQLConn
+    return {'Message pour vous ':"Bonjour cher développeur/utilisateur, BIENVENUE dans la politique de confidentialité de nightON",
+            'Politique de confidentialité' : Privacy_Policy}
 
 
-def execute_creation_script(PATH_TO_SQL_CREA_SCRIPT='./ressources/create_nighton_db.txt'):
-
-    with open(PATH_TO_SQL_CREA_SCRIPT, 'r') as cq:
-        crea_db_query = cq.readlines()[0]
-    
-    try:
-        print(">> DB creation...")  
-        conn = connect_to_mysql_db(MODE='test')
-        cursor = conn.cursor()
-        cursor.execute(crea_db_query)
-        print('-> DB created !\n')
-    except Exception as e:
-        print(f"Erreur dans execute_creation_script() ::: {e}")
-        raise e
-
-
-# Route pour creer un nouveau user
-@app.post("/users/")
-async def createUser(user: ClassUserData):
-
-    try:
-        # connexion à la base de données MySQL
-        conn = connect_to_mysql_db()
-        cursor = conn.cursor()
-
-        # verifer que la table existe : si non on executer le script de création  
-        execute_creation_script()
-
-        # Insérez les données d'authentification dans la base de données
-        i = str(uuid.uuid4())
-        insert_query = "INSERT INTO userdata_v1 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        insert_values = (i,
-                         user.firstname_user,
-                         user.lastname_user,
-                         user.birthdate_user,
-                         user.email_user,
-                         user.telephone_user,
-                         user.pays,
-                         user.code_postal,
-                         user.ville,
-                         user.numero_rue,
-                         user.nom_rue,
-                         user.complement_adresse_1,
-                         user.complement_adresse_2)
-        
-        cursor.execute(insert_query, insert_values)
-
-        # Validez les changements et fermez la connexion
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        return {"message": "Données d'authentification enregistrées avec succès"}
-
-    except Exception as e:
-        return {"error": str(e)}
-        #   exple : "error": "1054 (42S22): Unknown column 'uid' in 'field list'" -> la colonne n'existe pas dans la table cible aka mauvais nom
-
-
-# route pour afficher un utilisateur 
-@app.get("/users/{email_user}", response_model=ClassUserData)
-async def readUser(email_user: str):
-
-    # connexion à la base de données MySQL
-    conn = connect_to_mysql_db()
-    cursor = conn.cursor()
-
-
-    read_query = "SELECT * FROM userdata_v1 WHERE email_user=%s"
-    read_values = (email_user,) # email_user renseigné dans la def de la fonction 
-    
-    cursor.execute(read_query, read_values)
-    user = cursor.fetchone()
-    cursor.close()
-
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    else:
-        user = {'id_user': user[0], 
-                'firstname_user': user[1],
-                'lastname_user': user[2],
-                'birthdate_user': user[3],
-                'email_user': user[4],
-                'telephone_user': user[5],
-                'pays': user[6],
-                'code_postal': user[7],
-                'ville': user[8],
-                'numero_rue': user[9],
-                'nom_rue': user[10],
-                'complement_adresse_1': user[11],
-                'complement_adresse_2': user[12]}
-    return user
-
-# route pour maj les donnees personnelles d'un user
-@app.put("/users/{email_user}")
-async def updateUser(user: ClassUserData):
+@app.post("/users/register", tags=['step One'])
+async def registerUser(user_data: UserDataM.ClassUserDataM):
     """
+    Créer nouvel utilisateur.
     """
-    try: 
-        # connexion à la base de données MySQL
-        conn = connect_to_mysql_db()
-        cursor = conn.cursor()
+    response = UserDataC.ClassUserDataC.addOneUser(obj_user=user_data)
+    return {'response': response}   
 
-        # verifier que le user existe
 
-        # màj ses data
-        update_query = "UPDATE userdata_v1 SET firstname_user=%s, lastname_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE email_user=%s"
-        update_values = (user.firstname_user,
-                        user.lastname_user,
-                        user.birthdate_user,
-                        user.email_user,
-                        user.telephone_user,
-                        user.pays,
-                        user.code_postal,
-                        user.ville,
-                        user.numero_rue,
-                        user.nom_rue,
-                        user.complement_adresse_1,
-                        user.complement_adresse_2,
-                        user.email_user)
+@app.get("/users/login/request/{email_user}", tags=['step One'])
+async def loginRequest(email_user: str):
+    """
+    Demande de login utilisateur.
+    Envoie un code dans l'email.  
+    """
+    response = UserDataC.ClassUserDataC.loginRequest(email_user)
+    return {'response': response}
 
-        cursor.execute(update_query, update_values)
-        conn.commit()
-        cursor.close()
 
-        return {'message': 'Données mises à jour avec succès !'}
-    except Exception as e:
-        return {"error": str(e)}
+@app.get("/users/login/authentify/{email_user}/{code}", tags=['step One'])
+async def loginAuthentification(email_user: str, code:str):
+    """
+    Authentification utilisateur.
+    ----------------------------
+    @param email : email utilisateur.
+    @param code : code 5 chiffres reçu par mail.
+    @return : session id.
+    """
+    response = UserDataC.ClassUserDataC.loginAuth(email_user, code)
+    # renvoyer un session_id avec un timeout
+    return {'response': response}
 
-# route pour delete
-@app.delete("/users/{email_user}")
+
+@app.get("/users/display/{email_user}", tags=['protected endpoints'])
+# mettre une dépendance a loginAuth
+async def displayUserInfos(email_user: str):
+    """
+    Afficher données utilisateur.
+    """
+    response = UserDataC.ClassUserDataC.findOneByEmail(email_user)
+    return {'response': response}
+
+
+@app.post("/users/update", tags=['UsersData'])
+async def updateUserProfil(user: UserDataM.ClassUserDataM):
+    """
+    Mettre à jour un profil utilisateur.
+    """
+    response = UserDataC.ClassUserDataC.updateUserData(obj_user=user)
+    return {'response': response}
+
+
+@app.delete("/users/delete/{email_user}", tags=['UsersData'])
 async def deleteUser(email_user: str):
     """
+    Supprimer utilisateur.
     """
-    try: 
-        # connexion à la base de données MySQL
-        conn = connect_to_mysql_db()
-        cursor = conn.cursor()
-        delete_query = "DELETE FROM userdata_v1 WHERE email_user=%s"
-        delete_values = (email_user,)
-        cursor.execute(delete_query, delete_values)
-        conn.commit()
-        cursor.close()
-        return {'message : ' f'Utilisateur {email_user} supprimé !'}
-    except Exception as e:
-        return {f'error : str({e})'}
+    pass
+
+######### TENANTS ############
+
+@app.post("/users/{email}/tenants/register", tags=['Tenants'])
+async def registerTenant(new_tenant: TenantM.ClassTenantRegistering):
+    """
+    Créer nouveau locataire.
+    """
+    response = TenantC.ClassTenantC.addOneTenant(objIns=new_tenant)
+    return {'response': response}   
+
+
+
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
