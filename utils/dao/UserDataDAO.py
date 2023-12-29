@@ -211,7 +211,7 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
     
     def loginTableRead(self, email):
         try:
-            query = "SELECT * FROM userdata WHERE email_user = %s"
+            query = "SELECT * FROM login_table WHERE email_user = %s"
             values = (email,)
 
             self.cur.execute(query, values)

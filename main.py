@@ -1,6 +1,6 @@
 import uvicorn
 import sys
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
 from utils.entities import UserDataM
 from utils.controller import UserDataC
 
@@ -32,7 +32,7 @@ async def start():
             'Politique de confidentialité' : Privacy_Policy}
 
 
-@app.post("/users/register", tags=['UsersData'])
+@app.post("/users/register", tags=['step One'])
 async def registerUser(user_data: UserDataM.ClassUserDataM):
     """
     Créer nouvel utilisateur.
@@ -41,16 +41,7 @@ async def registerUser(user_data: UserDataM.ClassUserDataM):
     return {'response': response}   
 
 
-@app.get("/users/display/{email_user}", tags=['UsersData'])
-async def displayUserInfos(email_user: str):
-    """
-    Afficher données utilisateur.
-    """
-    response = UserDataC.ClassUserDataC.findOneByEmail(email_user)
-    return {'response': response}
-
-
-@app.get("/users/login/request/{email_user}", tags=['UsersData'])
+@app.get("/users/login/request/{email_user}", tags=['step One'])
 async def loginRequest(email_user: str):
     """
     Demande de login utilisateur.
@@ -60,7 +51,7 @@ async def loginRequest(email_user: str):
     return {'response': response}
 
 
-@app.get("/users/login/authentify/{email_user}/{code}", response_model=UserDataM.ClassUserDataM, tags=['UsersData'])
+@app.get("/users/login/authentify/{email_user}/{code}", tags=['step One'])
 async def loginAuthentification(email_user: str, code:str):
     """
     Authentification utilisateur.
@@ -70,6 +61,17 @@ async def loginAuthentification(email_user: str, code:str):
     @return : session id.
     """
     response = UserDataC.ClassUserDataC.loginAuth(email_user, code)
+    # renvoyer un session_id avec un timeout
+    return {'response': response}
+
+
+@app.get("/users/display/{email_user}", tags=['protected endpoints'])
+# mettre une dépendance a loginAuth
+async def displayUserInfos(email_user: str):
+    """
+    Afficher données utilisateur.
+    """
+    response = UserDataC.ClassUserDataC.findOneByEmail(email_user)
     return {'response': response}
 
 
@@ -98,15 +100,6 @@ async def registerTenant(new_tenant: TenantM.ClassTenantRegistering):
     """
     response = TenantC.ClassTenantC.addOneTenant(objIns=new_tenant)
     return {'response': response}   
-
-
-@app.get("/tenants/display/{email_user}", tags=['Tenants'])
-async def displayTenantInfos(email_user: str):
-    """
-    Afficher données utilisateur.
-    """
-    response = UserDataC.ClassUserDataC.findOneByEmail(email_user)
-    return {'response': response}
 
 
 

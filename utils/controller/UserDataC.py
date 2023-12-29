@@ -1,7 +1,29 @@
+import uuid
 from utils.dao.UserDataDAO import *
 from utils.entities.UserDataM import *
 
+from utils.mailer.mailerNightON import *
+
 class ClassUserDataC:
+
+    @staticmethod
+    def checkUserExists(obj_user: ClassUserDataM):
+        """Vérifie que le user existe dans  la base par son email.
+
+        Args:
+            obj_user (ClassUserDataM)
+
+        Returns:
+            bool : True | False
+        """
+        try:
+            res = False
+            if ClassUserDataDAO().findAllByOne(key=obj_user.email_user):
+                res = True
+            
+            return res
+        except Exception as e:
+            raise e
 
     @staticmethod
     def addOneUser(obj_user: ClassUserDataM):
@@ -9,6 +31,10 @@ class ClassUserDataC:
         Ajoute les données d'un nouvel utilisateur.
         """
         try:
+            # vverif si user exist
+            if ClassUserDataC.checkUserExists():
+                return 'USER ALREADY EXISTS'
+
             #obj_user = ClassUserDataM(**obj_user)
             #print(f"Type objet envoyé {type(obj_user)}")
             res = ClassUserDataDAO().insertOne(entity_instance=obj_user)
@@ -65,15 +91,32 @@ class ClassUserDataC:
 
         # try un display sans le faire
         try:
-            res = ClassUserDataC.findOneByEmail(email)
+            res: ClassUserDataM = ClassUserDataC.findOneByEmail(email)
             if res == 'AUCUN UTILISATEUR TROUVE':
                 return res
             else:
-                
+                # res est pareil que objUser
+                mailer = Mailer(timeout=5) 
+                mailer.sendEmail(
+                    emailDestination = res.email_user,
+                    mailTitle = 'VOTRE CODE DE CONNEXION',
+                    mailContentTemplateFile = '../mailer/mails/code_verification',
+                    placeholders = {
+                        "surname": res.firstname_user,
+                        "name": res.lastname_user
+                    }
+                )
+
+                code_value, operationResult = mailer.sendEmailCode(emailDestination = res.email_user)
                 # envoyer un mail 
                 # sauvegarder le code + email
-                ClassUserDataDAO().loginTableInsert()
-                pass
+                operationResult = True # enlever après Titoune
+                print(code_value)
+                print(operationResult)
+                if operationResult:
+                    ClassUserDataDAO().loginTableInsert(email = res.email_user, code = code_value)
+                else:
+                    print(f"Erreur_UserDataC.loginRequest()")
         except Exception as e:
             print(f"Erreur_UserDataC.loginRequest() ::: {e}")
 
@@ -81,11 +124,10 @@ class ClassUserDataC:
     def loginAuth(email, code):
         try:
             # fonction dao de récup (email, code)
-
             res = ClassUserDataDAO().loginTableRead(email)
-
+            print(res)
             if res[0] == email and  res[1] == code:
-                return True
+                return True, uuid.uuid4()
             else:
                 return False
         except Exception as e:
