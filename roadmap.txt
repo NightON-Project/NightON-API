@@ -1,0 +1,3 @@
+- [OK] qd on ping pour login, màj la logtable ou append avec un timestamp (retoucher le schema) ?
+- inserer 1 maison, afficher ttes les maisons, afficher 1e maison, supprimer une maison, modifier une maison
+

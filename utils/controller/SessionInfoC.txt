@@ -1,0 +1,328 @@
+from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import random
+from fastapi import Request
+from fastapi import Body
+
+from utils.dao.SessionInfoDAO import ClassSessionInfoDAO
+from utils.entities.SessionInfoM import ClassSessionInfoM
+
+from utils.entities.UserDataM import ClassUserDataM
+from utils.dao.UserDataDAO import ClassUserDataDAO
+
+class ClassSessionInfoC:
+    pass
+
+def getSessionId(request: Request):
+    """_summary_
+    Create a new dependency to get the session ID from cookies.
+    In main.py
+    Uses: 
+        - SessionInfoDAO().findAll() : lister ttes les sessions ID pour
+        verif si l'appelant existe
+    Args:
+        request (Request): _description_
+
+    Raises:
+        HTTPException: "Invalid session ID"
+
+    Returns:
+        session_id : _description_
+    """
+    session_id = request.cookies.get("session_id")
+
+    existing_sessions: list[ClassSessionInfoM] = ClassSessionInfoDAO().findAll()
+    existing_sessions_id: list = [s.session_id for s in existing_sessions]
+
+    if (session_id is None) or (session_id not in existing_sessions_id):
+        raise HTTPException(status_code=401, detail="Invalid session ID")
+    return session_id
+
+
+def getUserFromSession(session_id: str):
+    """ Use the valid session id to get the corresponding 
+        user from the users table in database.
+
+    Args:
+        session_id (str): _description_
+
+    Returns:
+        ClassUserDataM: user_data
+    """
+    session_user: ClassSessionInfoM = ClassSessionInfoDAO().findOne(key=session_id)
+    user: ClassUserDataM = ClassUserDataDAO().findAllByOne(key=session_user.email_user)
+    return user
+
+def getAuthenticatedUserFromSessionId(request: Request):
+    # Custom middleware for session-based authentication
+
+    # Get session from request
+    session_id = getSessionId(request)
+    # Get the user from the session
+    user = getUserFromSession(session_id)
+    return user
+
+
+def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
+
+    user = users.get(credentials.username)
+    if user is None or user["password"] != credentials.password:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return user
+
+
+# Protected endpoint - Requires authentication
+@router.get("/protected")
+def protected_endpoint(user: dict = Depends(get_authenticated_user_from_session_id)):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated")
+    return {"message": "This user can connect to a protected endpoint after successfully autheticated", "user": user}
+
+
+# Get current user endpoint - Returns the user corresponding to the session ID
+@router.get("/getusers/me")
+def read_current_user(user: dict = Depends(get_user_from_session_id)):
+    return user
+
+
+# Login endpoint - Creates a new session
+@router.post("/login")
+def login(user: dict = Depends(authenticate_user)):
+    session_id = create_session(user["user_id"])
+    return {"message": "Logged in successfully", "session_id": session_id}
+
+
+@app.post("/signup")
+def sign_up(username: str = Body(...), password: str = Body(...)):
+    user = users.get(username)
+    if user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Username already exists",
+        )
+    new_user_id = len(users) + 1
+    new_user = {
+        "username": username,
+        "password": password,
+        "user_id": new_user_id
+    }
+    users[username] = new_user
+    return {"message": "User registered successfully"}
+
+
+# Logout endpoint - Removes the session
+@router.post("/logout")
+def logout(session_id: int = Depends(get_session_id)):
+    if session_id not in sessions:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+    sessions.pop(session_id)""
+    return {"message": "Logged out successfully", "session_id": session_id}
+
+
+#################
+# jwt.io
+
+SECRET_KEY = 'nightontemporarysecret'
+ALGORITHM = 'HS256'
+ACCES_TOKEN_EXPIRE_MINUTES = 30
+
+from pydantic import BaseModel
+
+class Token(BaseModel):
+    access_token: str
+    token-type: str
+
+class TokenData(BaseModel):
+    """
+    A partir du SessionDAO on peut access au mail user.
+    A partir du usermail on peut retrouver les userdata. 
+    """
+    session_id: str or None = None
+
+# jwt : header(type token et algo) + data + signature/secret_key
+# post log requ [email] => receive code => create [session_id, email, code]
+# post [email + code] => check session info => return token {jwt : header, session, id}, token has timeout
+    
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+
+# get user func
+# authenticate user func : check code + email
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else :
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    
+    to_encode_update({'exp': expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+@app.post('/token', response_model=Token)
+async def loginForAcessToken(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form_data.username, forma_data.code)
+
+    if not user:
+        raise HTTPException(
+            status_code = status.HTTP_401_UNAUTHORIZED,
+            detail = "Incorrect username or pw",
+            headers = {"WWW_Authenticate": "Bearer"}
+        )
+
+    access_token_expires = timedelta(minutes=ACCES_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data = {"sub": user.username}, expires_delta=access_token_expires
+    )
+
+    return {'access_token': access_token, 'type': 'bearer'}
+
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception =  HTTPException(
+            status_code = status.HTTP_401_UNAUTHORIZED,
+            detail = "Could not validate credentials",
+            headers = {"WWW_Authenticate": "Bearer"}
+        )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_session :str = payload.get('sub')
+        if user_session is None:
+            raise credentials_exception
+        token_data = TokenData(session_id=user_session)
+    except JWTError:
+        raise credentials_exception
+    
+    user = get_user() # de la bdd avec son email
+    if user is None : 
+        raise credentials_exception
+    return user
+
+
+
+async def get_current_active_user(current_user: User = Depends(get_current_user)):
+    if current_user.disabled: # est user avec une propriété disabled # maisdu coup peut aller dans session info (session active ou pas)
+        raise HTTPException(status_code=400, detail='Inactive Session')    
+    return current_user
+
+
+@app.get('/users/me', response_model=User)
+async def get_me(current_user: User = Depends(get_current_active_user)):
+    return current_user
+
+
+
+##################
+
+from fastapi import FastAPI, status, HTTPException, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import RedirectResponse
+
+from utils.dao.SessionInfoDAO import ClassSessionInfoDAO
+from utils.entities.SessionInfoM import ClassSessionInfoM
+
+from utils.entities.UserDataM import ClassUserDataM
+from utils.controller.UserDataC import ClassUserDataC
+
+from utils.gToken import (
+    createAccessToken,
+    createRefreshToken
+)
+
+from utils.deps import reuseable_oauth
+
+from utils.mailer.mailerNightON import *
+
+
+class ClassSessionInfoC:
+
+    credential_exception_type_user = HTTPException(
+                            status_code = status.HTTP_401_UNAUTHORIZED,
+                            detail = "User does not exist",
+                            headers = {"WWW_Authenticate": "Bearer"}
+                            )
+
+    mailer_exception_type_ope_res = HTTPException(
+                            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail = "Auth Mail failed to send",
+                            headers = {"WWW_Authenticate": "Bearer"}
+                            )
+
+    credential_exception_type_email_or_code = HTTPException(
+                            status_code = status.HTTP_400_BAD_REQUEST,
+                            detail = "Incorrect email or code"
+                            )
+    
+    @staticmethod
+    def loginRequest(email: str) :
+        """
+        verife que le user existe 
+        creer le code et lui envoie
+        retourne un token access contenant la session_id
+        """
+        # chercher le user
+        try:
+            user: ClassUserDataM = ClassUserDataC.findOneByEmail(email)
+            if user == 'AUCUN UTILISATEUR TROUVE':
+                raise ClassSessionInfoC.credential_exception_type_user
+            else:
+                # res est pareil que objUser
+                mailer = Mailer(timeout=5) 
+                mailer.sendEmail(
+                    emailDestination = user.email_user,
+                    mailTitle = 'VOTRE CODE DE CONNEXION',
+                    mailContentTemplateFile = '../mailer/mails/code_verification',
+                    placeholders = {
+                        "surname": user.firstname_user,
+                        "name": user.lastname_user
+                    }
+                )
+
+                code_value, operationResult = mailer.sendEmailCode(emailDestination = user.email_user)
+                # envoyer un mail 
+                # sauvegarder le code + email
+                operationResult = True # : /!\ enlever après Titoune
+                print(code_value)
+                print(operationResult)
+                if operationResult:
+                    #ClassUserDataDAO().loginTableInsert(email = res.email_user, code = code_value)
+                    
+                    # /// passer dabs le session info model avant ecriture
+                    session_id = ClassSessionInfoDAO().insertOne(entity_instance=user, code=code_value)
+                    
+                    return {"access_token": createAccessToken(session_id)}
+                           
+                else:
+                    print(f"Erreur_UserDataC.loginRequest()")
+                    raise ClassSessionInfoC.mailer_exception_type_ope_res
+        except Exception as e:
+            print(f"Erreur_UserDataC.loginRequest() ::: {e}")
+
+
+    @staticmethod
+    def loginAuth(acces_token, mail_code):
+        """
+        decode le token et extrait le session_id
+        combine avec le mail_code pour faire la verif 
+        """
+        try:
+            # fonction dao de récup (email, code)
+            res : ClassSessionInfoM = ClassSessionInfoDAO().findOne(key=session_id) # by session id
+            print(res)
+            if res[0] == email and  res[1] == code:
+                # set la session à active
+                # enregistrer le token de refresh
+                # retourner {access et refresh token}
+                return {
+                        "access_token": at_value,
+                        "refresh_token": rt_value
+                        }
+            else:
+                raise ClassSessionInfoC.credential_exception_type_email_or_code
+        except Exception as e:
+            print(f"Erreur_UserDataC.loginAuth() ::: {e}")

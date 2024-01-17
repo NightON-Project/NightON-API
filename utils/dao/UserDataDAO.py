@@ -136,7 +136,7 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
         @return: dict {"error"|"message": ...}
         """
         try:
-            query = "UPDATE userdata_v1 SET firstname_user=%s, lastname_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE email_user=%s"
+            query = "UPDATE userdata SET firstname_user=%s, lastname_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE email_user=%s"
             values = (
                 entity_instance.firstname_user,
                 entity_instance.lastname_user,
@@ -208,7 +208,23 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
             self.conn.close()
             return f"Erreur_UserDataDAO.loginTableInsert() ::: {e}"
 
-    
+    def loginTableUpdateCode(self, code:str, email:str):
+        try:
+            query = "UPDATE login_table SET code=%s WHERE email_user=%s"
+            values = (code, email,)
+
+            self.cur.execute(query, values)
+            self.conn.commit()  # fin de la transaction
+            self.cur.close()
+            self.conn.close()
+            print('- Requête màj fin ... ')
+            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+        except Exception as e:
+            self.cur.rollback()
+            self.cur.close()
+            self.conn.close()
+            return f"Erreur_UserDataDAO.loginTableUpdate() ::: {e}"
+
     def loginTableRead(self, email):
         try:
             query = "SELECT * FROM login_table WHERE email_user = %s"

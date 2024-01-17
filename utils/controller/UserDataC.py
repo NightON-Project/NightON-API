@@ -87,7 +87,7 @@ class ClassUserDataC:
         pass
 
     @staticmethod
-    def loginRequest(email: str):
+    def loginRequest(email: str) -> None:
 
         # try un display sans le faire
         try:
@@ -113,8 +113,11 @@ class ClassUserDataC:
                 operationResult = True # enlever après Titoune
                 print(code_value)
                 print(operationResult)
-                if operationResult:
-                    ClassUserDataDAO().loginTableInsert(email = res.email_user, code = code_value)
+                if operationResult: 
+                    user_in_login_table = ClassUserDataDAO().loginTableRead(res.email_user) # si le mail est present, update le code :: pas d'historique 
+                    if not user_in_login_table:
+                        ClassUserDataDAO().loginTableInsert(email = res.email_user, code = code_value)
+                    ClassUserDataDAO().loginTableUpdateCode(code=code_value, email=res.email_user)
                 else:
                     print(f"Erreur_UserDataC.loginRequest()")
         except Exception as e:
@@ -126,8 +129,10 @@ class ClassUserDataC:
             # fonction dao de récup (email, code)
             res = ClassUserDataDAO().loginTableRead(email)
             print(res)
-            if res[0] == email and  res[1] == code:
-                return True, uuid.uuid4()
+            if len(code) != 5:
+                return False
+            if res[0] == email and res[1] == code:
+                return True
             else:
                 return False
         except Exception as e:

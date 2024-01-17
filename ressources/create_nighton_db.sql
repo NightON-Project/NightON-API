@@ -57,3 +57,13 @@ CREATE TABLE IF NOT EXISTS rental_agreements(
     CONSTRAINT fk_rental_agreements_owners FOREIGN KEY(id_owner) REFERENCES owners(id_owner) ON DELETE CASCADE,
     CONSTRAINT fk_rental_agreements_properties FOREIGN KEY(id_property) REFERENCES properties(id_property) ON DELETE CASCADE
 );
+
+
+CREATE TABLE IF NOT EXISTS sessions_infos(
+    session_id VARCHAR(255) PRIMARY KEY,
+    email_user VARCHAR(255),
+    mail_code VARCHAR(5),
+    is_active BOOLEAN,
+    access_token VARCHAR(1000),
+    refresh_token VARCHAR(1000)
+)
