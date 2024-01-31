@@ -1,20 +1,20 @@
 # NightON-API
 
-##### Après avoir cloné ce repos :
+##### Après avoir cloné ce repos
 
-- Dans la racine, créez un environnement virtuel :
+- Dans la racine, créez un environnement virtuel 
 ```
 python -m venv .venv
 ```
-- activez l'environnement virtuel depuis la racine :
+- Activez l'environnement virtuel depuis la racine 
 ```
 .venv/scripts/activate
 ```
-- installer les requirements depuis la racine :
+- Installer les requirements depuis la racine 
 ```
 pip install -r requirements.txt
 ```
-Enfin lancer depuis la racine du projet :
+- Enfin lancer depuis la racine du projet
 ```
 unvicorn main:app --reload
 ```
