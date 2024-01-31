@@ -2,15 +2,24 @@ import uvicorn
 import sys
 from fastapi import FastAPI, Depends, HTTPException, Response, Cookie, Security
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from utils.entities import UserDataM
-from utils.controller import UserDataC
-
-from utils.entities import TenantM
-from utils.controller import TenantC
+from fastapi.middleware.cors import CORSMiddleware
+from utils.entities import UserDataM, TenantM, PropertyM
+from utils.controller import UserDataC, TenantC, PropertyC
 
 from typing import Annotated
 
 app = FastAPI()
+
+# Configuration CORS pour gérer les accès au web service
+# middleware : fonction qui s'exécute à chaque appel d'un endpoint
+origins = ["*"]  # Ajoutez ici vos origines autorisées
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get('/', response_model=dict)
 async def start():
@@ -109,7 +118,20 @@ async def registerTenant(new_tenant: TenantM.ClassTenantRegistering):
     return {'API rep': res}   
 
 
+####### BIENS A LOUER ##############
+@app.get('/no_acceuil', tags=['Properties'])
+async def displayAll():
+    """
+    Affichage par defaut, overview des logements.
+    """
+    res = PropertyC.ClassPropertyC.displayAll()
+    return {'API rep': res}
 
+@app.post('/add_property')
+async def addProperty(prop:PropertyM.ClassPropertyM):
+    #res = PropertyC.ClassPropertyC.addOne(prop)
+    #return {'API rep': res}
+    pass
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(app, host="127.0.0.1", port=8000)#, reload=True)

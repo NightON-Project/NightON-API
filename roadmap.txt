@@ -1,3 +1,54 @@
-- [OK] qd on ping pour login, màj la logtable ou append avec un timestamp (retoucher le schema) ?
 - inserer 1 maison, afficher ttes les maisons, afficher 1e maison, supprimer une maison, modifier une maison
+
+nom_affichage 
+
+category (RP, Terrain, RS)
+ss_category (Maison, Appart)
+adresse_property [details] 
+a_souscrit_a_nighton_caution
+
+url1
+url2
+url3
+url4 opt
+url5 opt
+url6 opt
+url7 opt
+url8 opt
+url9 opt
+url10 opt
+
+--desc
+
+nbre_piece : 1 - 100 int
+nbre_chambres : 1-100 int
+superficie_m2 : float
+has_bathroom : bool
+number_bathrooms : int
+has_toilets : bool
+number_toilets : int
+has_garden : bool
+superficie_garden : float
+has_pool : bool
+
+has_cameras : bool
+wifi_is_available : bool
+has_detecteur_de_fumee : bool
+
+has_climatiseur : bool
+has_place_parking : bool
+has_objets_cassables : bool
+description_annexe : texte à remplir VARCHAR(5000)
+
+id_proprio
+
+confirmation_mairie : bool
+n0_declaration_meuble_mairie : int
+assert_is_RP : bool
+assert_is_RS : bool
+
+prix : float
+status : {dispo, reservé, plus dispo}
+date dispo debut
+date dispo fin
 
