@@ -7,8 +7,8 @@ from utils.mailer.mailerNightON import *
 class ClassUserDataC:
 
     @staticmethod
-    def checkUserExists(obj_user: ClassUserDataM):
-        """Vérifie que le user existe dans  la base par son email.
+    def checkUserExists(email: str):
+        """Vérifie qu'un user existe avec cet email dans la base.
 
         Args:
             obj_user (ClassUserDataM)
@@ -18,7 +18,7 @@ class ClassUserDataC:
         """
         try:
             res = False
-            if ClassUserDataDAO().findAllByOne(key=obj_user.email_user):
+            if ClassUserDataDAO().findAllByOne(key=email):
                 res = True
             
             return res
@@ -32,7 +32,7 @@ class ClassUserDataC:
         """
         try:
             # vverif si user exist
-            if ClassUserDataC.checkUserExists():
+            if ClassUserDataC.checkUserExists(obj_user.email_user):
                 return 'USER ALREADY EXISTS'
 
             #obj_user = ClassUserDataM(**obj_user)
@@ -124,9 +124,17 @@ class ClassUserDataC:
             print(f"Erreur_UserDataC.loginRequest() ::: {e}")
 
     @staticmethod
-    def loginAuth(email, code):
+    def loginAuth(email, code=None, from_firebase=False):
         try:
-            # fonction dao de récup (email, code)
+            if from_firebase:
+                exists = ClassUserDataC.checkUserExists(email)
+                print(f'does mail exists {exists}')
+                if exists:
+                    return True
+                else:
+                    return False
+                
+            # si auth pas faite avec firebase -> fonction dao de récup (email, code)
             res = ClassUserDataDAO().loginTableRead(email)
             print(res)
             if len(code) != 5:

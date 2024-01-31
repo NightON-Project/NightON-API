@@ -2,7 +2,7 @@ _old/*
 .idea/*
 .ruff_cache/*
 ressources/secret/*.json
-venv/*
-env/*
-.env/*
-.venv/*
+venv/
+env/
+.env/
+.venv/
