@@ -1,17 +1,23 @@
 # NightON-API
 
-##### (Config en image)
-![steps configuration](https://github.com/NightON-Project/NightON-API/blob/main/how%20to%20setup.png)
-<br>
-Enfin, 
+##### Après avoir cloné ce repos :
+
+- Dans la racine, créez un environnement virtuel :
+```
+python -m venv .venv
+```
+- activez l'environnement virtuel depuis la racine :
+```
+.venv/scripts/activate
+```
+- installer les requirements depuis la racine :
+```
+pip install -r requirements.txt
+```
+Enfin lancer depuis la racine du projet :
 ```
 unvicorn main:app --reload
 ```
-
-##### (Config en texte) Après avoir cloné ce repos :
-- Dans la racine, créez un environnement virtuel : python -m venv .ven
-- activez l'environnement virtuel depuis la racine : .venv/scripts/activate
-- installer les requirements depuis la racine : pip install -r requirements.txt
 
 L'API interface entre la bdd et la partie backend du site. <br>
 
