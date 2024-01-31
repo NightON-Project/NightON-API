@@ -1,10 +1,12 @@
 import uvicorn
 import sys
-from fastapi import FastAPI, Depends, HTTPException, Response, Cookie, Security
+from fastapi import FastAPI, Depends, HTTPException, Response, Cookie, Security, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from utils.entities import UserDataM, TenantM, PropertyM
 from utils.controller import UserDataC, TenantC, PropertyC
+
+from fastapi.security import OAuth2PasswordBearer
 
 from typing import Annotated
 
@@ -62,6 +64,27 @@ async def loginAuthentification(email_user: str, code:str, response: Response):
     res = UserDataC.ClassUserDataC.loginAuth(email_user, code)
     if not res:
         raise HTTPException(status_code=403, detail='Please enter correct email or code')
+    # !! a modif apres pour sécu :: hash reversible, jwt token
+    response.set_cookie(key='connected_cookie', value=f'yes_{email_user}', expires=3*60)
+    return {"API rep" : f"Bienvenue {email_user} !"}
+
+
+@app.get("/login/auth/from_firebase/{email_user}", tags=['step One'])
+async def firebaseLoginAuthentification(email_user: str, response: Response):
+    """
+    FAIRE UNE ROUTE POUR LES CAS FIREBASE 
+    SI EMAIL VERIFIé ROUTE PAREILLE SS CODE 
+    Authentification utilisateur en passant par firebase.
+    ----------------------------
+    @param email : email utilisateur.
+    @return : session id.
+    """
+    res = UserDataC.ClassUserDataC.loginAuth(email_user, from_firebase=True)
+    print('HERE', res)
+    if not res:
+        # si non creer compte juste à partir de l'adresse mail + noms fictifs (modif après)
+        user_data = UserDataM.ClassUserDataM(firstname_user='FUser0000', lastname_user='LUser0000', email_user=email_user)
+        UserDataC.ClassUserDataC.addOneUser(obj_user=user_data)
     # !! a modif apres pour sécu :: hash reversible, jwt token
     response.set_cookie(key='connected_cookie', value=f'yes_{email_user}', expires=3*60)
     return {"API rep" : f"Bienvenue {email_user} !"}

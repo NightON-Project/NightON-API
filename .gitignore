@@ -2,4 +2,8 @@ _old/*
 .idea/*
 .ruff_cache/*
 ressources/secret/*.json
-venv/*
+venv/
+env/
+.env/
+.venv/
+__pycache__/
