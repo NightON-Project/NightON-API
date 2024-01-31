@@ -1,7 +1,7 @@
 # NightON-API
 
 ##### (Config en image)
-![steps configuration](how_to_setup.png)
+![steps configuration](how to setup.png)
 
 ##### (Config en texte) Après avoir cloné ce repos :
 - Dans la racine, créez un environnement virtuel : python -m venv .ven
