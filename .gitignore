@@ -3,3 +3,6 @@ _old/*
 .ruff_cache/*
 ressources/secret/*.json
 venv/*
+env/*
+.env/*
+.venv/*
