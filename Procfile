@@ -1,1 +1,1 @@
-web: uvicorn main:app
+web: uvicorn main:app --reload=False --workers=1
