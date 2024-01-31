@@ -119,7 +119,7 @@ async def registerTenant(new_tenant: TenantM.ClassTenantRegistering):
 
 
 ####### BIENS A LOUER ##############
-@app.get('/no_acceuil', tags=['Properties'])
+@app.get('/no_accueil', tags=['Properties'])
 async def displayAll():
     """
     Affichage par defaut, overview des logements.
