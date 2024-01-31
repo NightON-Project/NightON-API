@@ -1,9 +1,9 @@
 # NightON-API
 
-##### [config en image]
-![steps configuration]how_to_setup.png
+##### (Config en image)
+![steps configuration](how_to_setup.png)
 
-##### [config en texte] Après avoir cloné ce repos :
+##### (Config en texte) Après avoir cloné ce repos :
 - Dans la racine, créez un environnement virtuel : python -m venv .ven
 - activez l'environnement virtuel depuis la racine : .venv/scripts/activate
 - installer les requirements depuis la racine : pip install -r requirements.txt
