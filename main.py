@@ -134,4 +134,6 @@ async def addProperty(prop:PropertyM.ClassPropertyM):
     pass
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)#, reload=True)
+    import multiprocessing
+    multiprocessing.freeze_support()
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False, workers=2)
