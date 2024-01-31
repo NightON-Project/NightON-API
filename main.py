@@ -2,12 +2,24 @@ import uvicorn
 import sys
 from fastapi import FastAPI, Depends, HTTPException, Response, Cookie, Security
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.middleware.cors import CORSMiddleware
 from utils.entities import UserDataM, TenantM, PropertyM
 from utils.controller import UserDataC, TenantC, PropertyC
 
 from typing import Annotated
 
 app = FastAPI()
+
+# Configuration CORS pour gérer les accès au web service
+# middleware : fonction qui s'exécute à chaque appel d'un endpoint
+origins = ["*"]  # Ajoutez ici vos origines autorisées
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get('/', response_model=dict)
 async def start():
