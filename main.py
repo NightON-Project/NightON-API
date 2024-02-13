@@ -1,6 +1,6 @@
 import uvicorn
 import sys
-from fastapi import FastAPI, Depends, HTTPException, Response, Cookie, Security, status
+from fastapi import FastAPI, Depends, HTTPException, Response, Cookie, Security, status, Request, Header
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from utils.entities import UserDataM, TenantM, PropertyM
@@ -9,6 +9,9 @@ from utils.controller import UserDataC, TenantC, PropertyC
 from fastapi.security import OAuth2PasswordBearer
 
 from typing import Annotated
+
+from utils.auth.auth_bearer import token_required
+from utils.auth.auth_handler import generateJWT
 
 app = FastAPI()
 
@@ -24,13 +27,15 @@ app.add_middleware(
 )
 
 @app.get('/', response_model=dict)
-async def start():
+async def start(req: Request):
     """
     Point de départ de nightON API.
     """
     return {'Message pour vous' : "Bonjour cher développeur, bienvenue dans la politique de confidentialité de nightON",
             'Politique de confidentialité' : "On verra",
-            'Dernière màj' : "17/01/2024"}
+            'Dernière màj' : "17/01/2024",
+            'header': req.headers.get('authorization'), # enlever
+            'API Key': generateJWT(role_id='nightOnWebSiteApp')}
 
 
 @app.post("/register", tags=['step One'])
@@ -142,7 +147,8 @@ async def registerTenant(new_tenant: TenantM.ClassTenantRegistering):
 
 
 ####### BIENS A LOUER ##############
-@app.get('/no_acceuil', tags=['Properties'])
+@token_required
+@app.get('/acceuil', tags=['Properties'])
 async def displayAll():
     """
     Affichage par defaut, overview des logements.

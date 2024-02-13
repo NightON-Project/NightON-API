@@ -1,9 +1,9 @@
-import time
+from datetime import datetime, timedelta
 from typing import Dict
 import jwt
 from decouple import config
 
-JWT_SECRET = 'no_tem_secret'# config('secret')
+JWT_SECRET = 'no_temp_secret'# config('secret')
 JWT_ALGORITHM = 'HS256'#config('algorithm')
 
 
@@ -18,13 +18,11 @@ JWT_ALGORITHM = 'HS256'#config('algorithm')
 def tokenResponse(token: str):
     return {"access_token": token}
 
-def signJWT(role_id: str) -> Dict[str, str]:
-    """
-    APPELER CA AVEC UN 
-    """
+def generateJWT(role_id: str): #-> Dict[str, str]:
+    """Génère un token pour un user."""
     payload = {
-        "role_id": role_id,
-        "expires": time.time() + 60*1*1
+        'role_id': role_id,
+        'exp': datetime.utcnow() + timedelta(hours=1)
     }
     token = jwt.encode(payload, key=JWT_SECRET, algorithm=JWT_ALGORITHM)
     return tokenResponse(token)
@@ -42,7 +40,7 @@ def decodeJWT(token: str) -> dict:
 
     try:
         decoded_token = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        return decoded_token if decoded_token['expires'] >= time.time() else None
-    except:
+        return decoded_token if decoded_token['expires'] >= datetime.utcnow() else None
+    except Exception as e:
         print(f'Erreur_auth_handller() {e}')
         return {}
