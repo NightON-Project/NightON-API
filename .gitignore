@@ -3,7 +3,11 @@ _old/*
 .ruff_cache/*
 ressources/secret/*.json
 venv/
+venv/*
 env/
+env/*
 .env/
+.env/*
 .venv/
+.venv/*
 __pycache__/

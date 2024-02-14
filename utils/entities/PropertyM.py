@@ -14,8 +14,11 @@ class ClassPropertyOverviewM(BaseModel):
     url2: str
     url3: str
 
-class ClassPropertyMShow(BaseModel):
-    pass
+
+class ClassPropertyDetailsM(BaseModel):
+    """Equivaut pratiquement à ClassPropertyM sauf le legal"""
+    pass    
+
 
 class ClassPropertyM(BaseModel):    
     
@@ -76,6 +79,6 @@ class ClassPropertyM(BaseModel):
     nighton_caution_id: Optional[str] = ""
     id_owner: str
     confirmation_mairie : bool
-    n0_declaration_meuble_mairie : int
+    n0_declaration_meuble_mairie : str # ou int jsp
     assert_is_RP : bool
     assert_is_RS : bool

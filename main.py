@@ -32,9 +32,9 @@ async def start(req: Request):
     Point de départ de nightON API.
     """
     return {'Message pour vous' : "Bonjour cher développeur, bienvenue dans la politique de confidentialité de nightON",
-            'Politique de confidentialité' : "On verra",
-            'Dernière màj' : "17/01/2024",
-            'header': req.headers.get('authorization'), # enlever
+            'Politique de confidentialité' : "A voir",
+            'Dernière màj' : "14/02/2024",
+            #'header': req.headers.get('authorization'), # enlever
             'API Key': generateJWT(role_id='nightOnWebSiteApp')}
 
 
@@ -150,9 +150,7 @@ async def registerTenant(new_tenant: TenantM.ClassTenantRegistering):
 @token_required
 @app.get('/acceuil', tags=['Properties'])
 async def displayAll():
-    """
-    Affichage par defaut, overview des logements.
-    """
+    """Affichage par defaut, overview des logements."""
     res = PropertyC.ClassPropertyC.displayAll()
     return {'API rep': res}
 
@@ -161,6 +159,12 @@ async def addProperty(prop:PropertyM.ClassPropertyM):
     #res = PropertyC.ClassPropertyC.addOne(prop)
     #return {'API rep': res}
     pass
+
+@app.get('/acceuil/{nom_property}')
+async def displayPropertyDetails(nom_property: str):
+    """Afficher les details d'un logement par son nom."""
+    res = PropertyC.ClassPropertyC.displayPropertyByName(nom_affichage=nom_property)
+    return {'API rep': res}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)#, reload=True)

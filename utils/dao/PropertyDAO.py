@@ -124,16 +124,89 @@ class ClassPropertyDAO(ModelDAO.ClassModeleDAO):
             # annuler ttes les modifications non validées depuis le dernier commit()
             
 
-    def findAllByOne(self, key: str) -> list:
+    def findAllByOne(self, key: str) -> ClassPropertyM:
         """
         Trouver un bien par key.
         ---------------------
+        :param key: nom du bien.
+        :returns: objet property.
         """
-        pass
+        try:
+            query = f"""SELECT * FROM properties_table WHERE availability_status = 'dispo' AND nom_affichage = %s"""
+            values = (key,)
+
+            self.cur.execute(query, values)
+            res = self.cur.fetchone()
+
+            if not res:
+                return None
+            else:
+                p = ClassPropertyM(
+                        # general : 8
+                        id_property = res[0],
+                        nom_affichage = res[1],
+                        prix = res[2],
+                        availabilty_status = res[3],
+                        date_dispo_debut = res[4],
+                        date_dispo_fin = res[5],
+                        category = res[6],
+                        ss_category = res[7],
+                        # details global 17
+                        nbre_pieces = res[8],
+                        nbre_rooms = res[9],
+                        sup_totale_m2 = res[10],
+                        has_bathroom = res[11],
+                        nbre_bathrooms = res[12],
+                        has_toilets = res[13],
+                        nbre_toilets = res[14],
+                        has_garden = res[15],
+                        sup_garden = res[16],
+                        has_pool = res[17],
+                        has_cameras = res[18],
+                        wifi_available = res[19],
+                        has_detecteur_fumee = res[20],
+                        has_climatiseur = res[21],
+                        has_place_parking = res[22],
+                        has_objets_cassables = res[23],
+                        descr_complementaire = res[24],
+                        # images 10
+                        url1 = res[25],
+                        url2 = res[26],
+                        url3 = res[27],
+                        url4 = res[28],
+                        url5 = res[29],
+                        url6 = res[30],
+                        url = res[31],
+                        url8 = res[32],
+                        url9 = res[33],
+                        url10 = res[34],
+                        # localisation 7
+                        pays = res[35],
+                        code_postal = res[36],
+                        ville = res[37],
+                        numero_rue = res[38],
+                        nom_rue = res[39],
+                        complement_adresse_1 = res[40],
+                        complement_adresse_2 = res[41],
+                        # legal
+                        nighton_caution = res[42],
+                        nighton_caution_id = res[43],
+                        id_owner = res[44],
+                        confirmation_mairie = res[45],
+                        n0_declaration_meuble_mairie = res[46],
+                        assert_is_RP = res[47],
+                        assert_is_RS = res[48],
+                )
+
+                return p
+        except Exception as e:
+            print(f"Erreur_PropertyDAO.findAllByOne() :: {e}")
+            return {"error": str(e)}
+
 
     def findAll(self) -> list[ClassPropertyOverviewM]:
         """
-        Afficher tout. Afiner sur le statut = dispo
+        Afficher tout. Affiner sur le statut = dispo
         ---------------------
         """
         try:
