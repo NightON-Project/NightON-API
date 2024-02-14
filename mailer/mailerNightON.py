@@ -42,7 +42,7 @@ class Mailer:
                 self.server.login(smtp_username, smtp_password)
             except:
                 print("<NIGHTON_MAILER> : Impossible de se connecter au serveur SMTP")
-            print("<NIGHTON_MAILER> : SERVEUR SMT Connecté")
+            #print("<NIGHTON_MAILER> : SERVEUR SMT Connecté")
     def isValidConfig(self):
         return "smtp", "port", "username", "password" in self.data.keys()
     def loadConfigData(self):

@@ -16,7 +16,7 @@ HTML_FILE_CODE_VERIF = "code_verification"
 class Mailer:
     data = None
 
-    def __init__(self, timeout : int):
+    def __init__(self, timeout: int):
         '''
         Constructeur,
         timeout -> correspond au temps de refresh avant de renouveler la connexion au serveur SMTP (car la connexion
@@ -43,16 +43,18 @@ class Mailer:
             except:
                 print("<NIGHTON_MAILER> : Impossible de se connecter au serveur SMTP")
             print("<NIGHTON_MAILER> : SERVEUR SMT Connecté")
+
     def isValidConfig(self):
         return "smtp", "port", "username", "password" in self.data.keys()
+
     def loadConfigData(self):
         '''
         Méthode qui lit et met à jour la configuration au SMTP (de cette manière on peut switch de serveur SMTP sans
         interrompre l'execution du programme (car la config se met à jour tout les $REFRESH_TIME secondes.
         '''
         try:
-            #import os
-            #print(os.getcwd()) # exec depuis la racine
+            # import os
+            # print(os.getcwd()) # exec depuis la racine
             with open('./utils/mailer/config.json') as f:
                 self.data = load(f)
         except:
@@ -65,9 +67,10 @@ class Mailer:
         puis de le passer en paramètre à la fonction sendEmail.
         '''
         code = randint(10000, 99999)
-        return code, self.sendEmail(emailDestination, TITTLE_CODE_VERIF, HTML_FILE_CODE_VERIF, {"code" : code})
+        return code, self.sendEmail(emailDestination, TITTLE_CODE_VERIF, HTML_FILE_CODE_VERIF, {"code": code})
 
-    def sendEmail(self, emailDestination: str, mailTitle: str, mailContentTemplateFile: str, placeholders: dict = {}) -> bool:
+    def sendEmail(self, emailDestination: str, mailTitle: str, mailContentTemplateFile: str,
+                  placeholders: dict = {}) -> bool:
         '''
         Méthode principale du programme,
         Elle prend en entrée :
@@ -107,7 +110,7 @@ class Mailer:
         Met à jour la connection
         '''
         k = 0
-        while k<3:
+        while k < 3:
             sleep(self.timeout)
             try:
                 self.server.quit()
@@ -129,7 +132,7 @@ class Mailer:
         qui vérifie que l'opération s'est correctement déroulé.
         '''
         try:
-            #buffer = open(f"mails/{mailFile}.html", 'rb')
+            # buffer = open(f"mails/{mailFile}.html", 'rb')
             buffer = open(f"{mailFile}.html", 'rb')
         except OSError:
             print(f"<NIGHTON_MAILER> : Impossible d'ouvrir le fichier mails/{mailFile}.html")

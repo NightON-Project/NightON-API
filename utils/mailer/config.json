@@ -1,6 +1,6 @@
 {
-  "username" : "contact.nighton@humaneyes.fr",
-  "password" : "Nighton2023*",
-  "smtp" : "smtp.hostinger.com",
-  "port" : 465
+  "username": "contact.nighton@humaneyes.fr",
+  "password": "Nighton2023*",
+  "smtp": "smtp.hostinger.com",
+  "port": 465
 }
