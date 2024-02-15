@@ -52,3 +52,12 @@ status : {dispo, reservé, plus dispo}
 date dispo debut
 date dispo fin
 
+--------------------
+15-02
+- demande de reservation + validation d'une demande reservation ok sauf *
+
+- * mettre à jour les infos d'un tenant à la demande de resa
+- mettre à jour les infos d'un publieur à la demande de mise en ligne
+
+- recup l'id d'un owner à partir d'un id_property ok (se fait avec model property)
+- enregistrer les infos d'un logement à la demand ede publication d'un owner

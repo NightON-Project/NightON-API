@@ -28,7 +28,9 @@ class ClassPropertyC:
         
     @staticmethod
     def displayPropertyByName(nom_affichage: str):
-        """Pour afficher les détails d'un seul logement."""
+        """Pour afficher les détails d'un seul logement.
+        :returns : dict formatté + id_property(utilisé en cookie)
+        """
         try:
             p: ClassPropertyM = ClassPropertyDAO().findAllByOne(key=nom_affichage)
             if not p: # when p is None
@@ -77,7 +79,7 @@ class ClassPropertyC:
                 "note_moyenne": "___"
             }
 
-            return p_format
+            return p_format, p.id_property
         except Exception as e:
             print(f"Erreur PropertyC.displayPropertyByName() :: {e}")
             return 'ERROR'

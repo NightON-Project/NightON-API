@@ -21,14 +21,24 @@ CREATE TABLE IF NOT EXISTS login_table(
 CREATE TABLE IF NOT EXISTS tenants(
     id_tenant VARCHAR(255) PRIMARY KEY,
     id_user VARCHAR(255),
-    moyen_paiement VARCHAR(80),
+    email_user VARCHAR(255),
+    status_demande VARCHAR(80),
+    date_demande VARCHAR(80),
+    id_property VARCHAR(255),
+    CONSTRAINT fk_id_properties_table_tenants FOREIGN KEY(id_property) REFERENCES properties_table(id_property) ON DELETE CASCADE
     CONSTRAINT fk_userdata_tenants FOREIGN KEY(id_user) REFERENCES userdata(id_user) ON DELETE CASCADE
 );
+
+ALTER TABLE `u169130812_nighton_test`.`tenants` ADD starting_date_demand VARCHAR(80);
+ALTER TABLE `u169130812_nighton_test`.`tenants` ADD ending_date_demand VARCHAR(80);
+
 
 CREATE TABLE IF NOT EXISTS owners(
     id_owner VARCHAR(255) PRIMARY KEY,
     id_user VARCHAR(255),
-    moyen_paiement VARCHAR(80),
+    email_user VARCHAR(255),
+    status_demande VARCHAR(80),
+    date_demande VARCHAR(80),
     CONSTRAINT fk_userdata_owners FOREIGN KEY(id_user) REFERENCES userdata(id_user) ON DELETE CASCADE
 );
 

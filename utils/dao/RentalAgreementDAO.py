@@ -7,16 +7,15 @@ CURRENT_FILEPATH = os.path.dirname(os.path.abspath(__file__))
 ENTITIES_FOLDER_PATH = os.path.join(CURRENT_FILEPATH, '..')
 sys.path.insert(0, ENTITIES_FOLDER_PATH)
 
-from entities.UserDataM import ClassUserDataM
-from entities.OwnerM import ClassOwnerM
+from utils.entities.RentalAgreementM import ClassRentalAgreementM
 
-class ClassTenantDAO(ModelDAO.ClassModeleDAO):
+class ClassRentalAgreementDAO(ModelDAO.ClassModeleDAO):
     def __init__(self):
         """
-        Initialise un objet UserDataDAO en établissant une connexion à la base de données.
+        Initialise un objet RentalAgreementDAO en établissant une connexion à la base de données.
         """
         try:
-            print('- [UserDataDAO] Initialisation de la connexion ... ')
+            print('- [PropertyDAO] Initialisation de la connexion ... ')
             self.conn = ModelDAO.ClassModeleDAO.object_connection
             print('- Obj connexion ok ... ')
             self.conn.reconnect()
@@ -25,23 +24,26 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
         except Exception as e:
             print('HERE ERROR ', e)
             raise e
-        
-    def insertOne(self, entity_instance: ClassOwnerM) -> str:
+
+
+    def insertOne(self, entity_instance: ClassRentalAgreementM) -> str:
         """
-        Insère un objet dans la table Owners.
+        Insère un objet dans la table RentalAgreement.
         --------------------------
-        @params entity_instance: objet ClassOwnerM à insérer.
+        @params entity_instance: objet ClassRentalAgreementM à insérer.
         @return: le nombre de lignes affectées.
         """
         print("- Requête insertion début ... ")
         try:
-            query = "INSERT INTO owners VALUES (%s, %s, %s, %s)"
+            query = "INSERT INTO rental_agreements VALUES (%s, %s, %s, %s, %s, %s)"
             i = str(uuid.uuid4())
             values = (
                 i,
-                entity_instance.id_user,
-                entity_instance.status_demande,
-                entity_instance.date_demande,
+                entity_instance.id_tenant,
+                entity_instance.id_owner,
+                entity_instance.id_property,
+                entity_instance.starting_date_act_rent,
+                entity_instance.ending_date_act_rent,
             )
 
             self.cur.execute(query, values)
@@ -65,15 +67,28 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
     def findAll(self) -> list:
         pass
 
-    def findAllByOne(self, key) -> list:
-        pass
+    def findAllByOne(self, key) -> ClassRentalAgreementM:
+        """"""
+        try:
+            pass
+        except Exception as e:
+            print(f"Erreur_ActRentDAO.findAllByOne() :: {e}")
+            return {"error": str(e)}            
 
     def findAllByLike(self, key) -> list:
         pass
 
     # UPDATE
     def modifyOne(self, key, entity_instance):
-        pass
+        """"""
+        try:
+            pass
+        except Exception as e:
+            print(f"Erreur_ActRentDAO.modifyOne() ::: {e}")
+            return f"Erreur_ActRentDAO.modifyOne() ::: {e}"
+        finally:
+            self.cur.close()
+
 
     # DELETE
     def deleteOne(self, key):
@@ -88,3 +103,4 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
 
     def grantAPIRole(self, APIuser, pwd):
         pass
+

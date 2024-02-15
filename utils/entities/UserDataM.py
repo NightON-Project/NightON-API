@@ -20,3 +20,8 @@ class ClassUserDataM(BaseModel):
     complement_adresse_1: Optional[str] = ""
     complement_adresse_2: Optional[str] = ""
     # Ajoutez d'autres champs au besoin
+
+    # add moyen de paiement
+    
+    # 14/02/2024 : les tables Tenant et Owner 
+    # enregistrent les demandes de résa et de pub

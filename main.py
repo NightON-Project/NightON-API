@@ -1,12 +1,10 @@
 import uvicorn
 import sys
 from fastapi import FastAPI, Depends, HTTPException, Response, Cookie, Security, status, Request, Header
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.security import HTTPBasic, HTTPBasicCredentials, OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
-from utils.entities import UserDataM, TenantM, PropertyM
-from utils.controller import UserDataC, TenantC, PropertyC
-
-from fastapi.security import OAuth2PasswordBearer
+from utils.entities import UserDataM, TenantM, PropertyM, OwnerM
+from utils.controller import UserDataC, TenantC, PropertyC, OwnerC
 
 from typing import Annotated
 
@@ -135,36 +133,121 @@ async def deleteUser(email_user: str):
     """
     return 'Not ready'
 
-######### TENANTS ############
-
-@app.post("/users/tenants/register", tags=['Tenants'])
-async def registerTenant(new_tenant: TenantM.ClassTenantRegistering):
+######### DEMANDES CLIENT ############
+@app.post("/users/demande_reservation", tags=['Tenants'])
+# on peut récupérer son email de son cookie de connexion
+# il faudrait pouvoir récupérer l'id_property 
+async def registerTenant(
+    new_tenant: TenantM.ClassTenantRegisteringM,
+    connected_cookie: Annotated[str, Cookie()]=None,
+    current_property_cookie: Annotated[str, Cookie()]=None
+    ):
     """
-    Créer nouveau locataire.
+    Créer une nouvelle demande pour être locataire.
+    On a un statut 'waiting' au départ
+    Ensuite une fois valide passe à : 'approved'
     """
+    if connected_cookie is None:
+        raise HTTPException(status_code=403, detail='Please connect before.')
+    # email stocké dans le cookie
+    email_user = connected_cookie.split('_')[-1]
+    id_property = current_property_cookie.split('_')[-1]
+    # me = UserDataC.ClassUserDataC.findOneByEmail(email_user)
+    # identifie le user dans la bdd, retourne UTILISATEUR NON ENREGISTRE si mauvais cookie
+    new_tenant.email_user = email_user
+    new_tenant.id_logement = id_property
     res = TenantC.ClassTenantC.addOneTenant(objIns=new_tenant)
+
+    return {'API rep': res}   
+
+@app.post("/users/demande_publication", tags=['Owners'])
+# on devrait pouvoir récupérer son email de son cookie de connexion
+async def registerOwner(
+    new_owner: OwnerM.ClassOwnerRegisteringM,
+    connected_cookie: Annotated[str, Cookie()]=None
+    ):
+    """
+    Créer une nouvelle demande pour publier son logement.
+    On a un statut 'waiting' au départ
+    Ensuite une fois valide passe à : 'approved'
+    """
+    if connected_cookie is None:
+        raise HTTPException(status_code=403, detail='Please connect before.')
+    email_user = connected_cookie.split('_')[-1]
+    # identifie le user dans la bdd, retourne UTILISATEUR NON ENREGISTRE si mauvais cookie
+    new_owner.email_user = email_user
+    res = OwnerC.ClassOwnerC.addOneOnwer(objIns=new_owner)
     return {'API rep': res}   
 
 
 ####### BIENS A LOUER ##############
-@token_required
 @app.get('/acceuil', tags=['Properties'])
 async def displayAll():
     """Affichage par defaut, overview des logements."""
     res = PropertyC.ClassPropertyC.displayAll()
     return {'API rep': res}
 
-@app.post('/add_property')
-async def addProperty(prop:PropertyM.ClassPropertyM):
-    #res = PropertyC.ClassPropertyC.addOne(prop)
-    #return {'API rep': res}
+@app.get('/acceuil/{nom_property}')
+async def displayPropertyDetails(nom_property: str, response: Response):
+    """Afficher les details d'un logement par son nom.
+    Btw placer un cookie qui correspond au logement current.
+    """
+    res, id_property = PropertyC.ClassPropertyC.displayPropertyByName(nom_affichage=nom_property)
+    response.set_cookie(key='current_property_cookie', value=f'prop_{id_property}', expires=10*60)
+    return {'API rep': res}
+
+
+######## ADMIN: VALIDATION DES DEMANDES ##########
+from enum import Enum
+
+class status(Enum):
+  c = 'cancel'
+  w = 'waiting'
+  a = 'approved'
+
+  @classmethod
+  def all(cls):
+    return [status.a.value, status.b.value, status.c.value, status.d.value]
+
+# send mail to proprio
+# validate owner
+# validate tenant -> create contrat
+@app.get('/approvals/reservation/{property_id}/{tenant_id}/{new_status}')
+def changeStatusTenantDemand(
+    tenant_id: str=None,
+    property_id: str=None, 
+    new_status: str=None
+    ):
+    if tenant_id and new_status:
+        new_status = new_status.lower()
+        if new_status not in status.all():
+            raise HTTPException(status_code=401, detail=f'Wrong status. Choose between {status.all()}')
+
+        if new_status == status.c:
+            res = TenantC.ClassTenantC.deleteTenant(tenant_id)
+            
+        if new_status == status.a:
+            res = TenantC.ClassTenantC.validateTenant(tenant_id, property_id)
+    return {'API rep': res}
+
+
+@app.get('/approvals/publication/{owner_id}')
+def changeStatusOwnerDemand(owner_id):
     pass
 
-@app.get('/acceuil/{nom_property}')
-async def displayPropertyDetails(nom_property: str):
-    """Afficher les details d'un logement par son nom."""
-    res = PropertyC.ClassPropertyC.displayPropertyByName(nom_affichage=nom_property)
-    return {'API rep': res}
+@app.post('/approvals/reservation/send_notification')
+def sendNotifToOwner():
+    """Envoyer un mail de notification aux proprio qd il ya une demande de resa."""
+    content = ""
+    pass
+
+@app.post('/approvals/reservation/send_notification')
+def sendNotifToTenant():
+    """Envoyer un mail de confirmation avec un certain contenu."""
+    content = ""
+    pass
+
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)#, reload=True)
