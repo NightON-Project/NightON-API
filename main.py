@@ -147,8 +147,12 @@ async def registerTenant(
     On a un statut 'waiting' au départ
     Ensuite une fois valide passe à : 'approved'
     """
+    if current_property_cookie is None:
+        raise HTTPException(status_code=500, detail='Internal Error cannot identify property.')
+
     if connected_cookie is None:
         raise HTTPException(status_code=403, detail='Please connect before.')
+
     # email stocké dans le cookie
     email_user = connected_cookie.split('_')[-1]
     id_property = current_property_cookie.split('_')[-1]

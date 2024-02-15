@@ -23,6 +23,23 @@ class ClassTenantC:
             if objUser is None:
                 return 'UTILISATEUR NON ENREGISTRE'
             
+            objUserUpdated = objUser
+            # mise à jour des attributs
+            objUserUpdated.firstname_user = objIns.prenom
+            objUserUpdated.lastname_user = objIns.nom
+            objUserUpdated.birthdate_user = objIns.date_naissance
+            # objUserUpdated.email_user=objIns.email_user
+            objUserUpdated.numero_rue = objIns.numero_rue
+            objUserUpdated.nom_rue = objIns.nom_rue
+            objUserUpdated.ville = objIns.ville
+            objUserUpdated.code_postal = objIns.code_postal
+            # et les complements adresse 1 et 2 ?
+            # et le numero de telephone ?
+            #completer avec les urls des pieces ?
+            res_update_user = ClassUserDataDAO().modifyOne(key=objIns.email_user, entity_instance=objUserUpdated)
+            if res_update_user == 0:
+                return f'ERROR WHILE UPDATING USERDATA'
+
             objTenant = ClassTenantM(# id tenant est géré coté DAO
                             id_user=objUser.id_user,
                             status_demande=objIns.status_demande,
@@ -32,9 +49,9 @@ class ClassTenantC:
                             starting_date_demand=objIns.starting_date_demand,
                             ending_date_demand=objIns.ending_date_demand)
 
-            res = ClassTenantDAO().insertOne(entity_instance=objTenant)
-            if res == 0:
-                return f'ERROR'
+            res_tenant_dmd = ClassTenantDAO().insertOne(entity_instance=objTenant)
+            if res_tenant_dmd == 0:
+                return f'ERROR WHILE REGISTERING DEMAND'
             else:
                 return 'DEMANDE ENREGISTREE'
         except Exception as e:
