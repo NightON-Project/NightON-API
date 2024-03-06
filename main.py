@@ -43,9 +43,10 @@ async def start(req: Request):
     return {
         "Message pour vous": "Bonjour cher développeur, bienvenue dans la politique de confidentialité de nightON",
         "Politique de confidentialité": "A voir",
-        "Dernière màj": "14/02/2024",
+        "Dernière màj": "06/03/2024",
         #'header': req.headers.get('authorization'), # enlever
-        "API Key": generateJWT(role_id="nightOnWebSiteApp"),
+        #"API Key": generateJWT(role_id="nightOnWebSiteApp"),
+        "API Key": 'Not available.'
     }
 
 
