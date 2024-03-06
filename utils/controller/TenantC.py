@@ -120,7 +120,7 @@ class ClassTenantC:
                 return 'ERROR WHILE CREATING CONTRACT'
             
             ### enfin mettre le status du logement sur pas dispo
-            res_status_property = ClassPropertyDAO().modifyStatus(key=res_property.id_property, new_status='pas dispo')
+            res_status_property = ClassPropertyDAO().modifyStatus(key=res_property.id_property, new_status='plus dispo')
             if res_status_property == 0:
                 return 'ERROR WHILE UPDATING PROPERTY STATUS'
 
@@ -132,7 +132,9 @@ class ClassTenantC:
 
     @staticmethod
     def deleteTenant(id):
-        """Supprimer une demande de reservation. (juste changer le status à refuser => garder un historique.)
+        """Supprimer une demande de reservation. 
+        Fait dans cet ordre : 
+            - changer le status de la demande à canceled => garder un historique.
         :param id is tenant_id.
         """
         try:

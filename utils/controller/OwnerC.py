@@ -117,13 +117,15 @@ class ClassOwnerC:
 
 
     @staticmethod
-    def deleteOwner(id):
-        """Supprimer une demande de publication. (juste changer le status à refuser
-            => on garde un historique.
+    def deleteOwner(id_owner, id_property):
+        """Supprimer une demande de publication. 
+        Fait dans cet ordre : 
+            - changer le status de la demande à canceled => garder historique
+            - la dispo de la property passe sur 'supprimee/publication annulee'.
         :param owner_id:
         )"""
         try:
-            res = ClassOwnerDAO().findAllByOne(key=id)
+            res = ClassOwnerDAO().findAllByOne(key=id_owner)
             if not res:
                 return 'AUCUNE DEMANDE DE PUBLICATION AVEC CET ID.'
             
@@ -132,6 +134,15 @@ class ClassOwnerC:
             res_bis = ClassOwnerDAO().modifyOne(key=res.email_user, entity_instance=updated_demand)
             if not res_bis:
                 return 'ERROR WHILE UPDATING STATUS.'
+            
+            ### chercher le logement à partir de son id
+            res_property = ClassPropertyDAO().findOne(key=id_property)
+            if not res_property:
+                return 'ERROR WHILE SEEKING PROPERTY.'
+            res_status_property = ClassPropertyDAO().modifyStatus(key=res_property.id_property, new_status='deleted')
+            if not res_status_property:
+                return 'ERROR WHILE DELETING PROPERTY.'
+
             return 'DEMANDE ANNULEE.'
 
         except Exception as e:

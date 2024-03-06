@@ -26,7 +26,7 @@ class ClassPropertyM(BaseModel):
     id_property: str
     nom_affichage: str
     prix: float 
-    availabilty_status: str # field validator ou enum {dispo, reservé, plus dispo}
+    availabilty_status: str # field validator ou enum {dispo, reservé, plus dispo, en attente, supprimee}
     date_dispo_debut: str #
     date_dispo_fin: str #
     category: str # (RP, Terrain, RS)

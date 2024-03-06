@@ -249,7 +249,7 @@ def changeStatusOwnerDemand(
             raise HTTPException(status_code=401, detail=f'Wrong status. Choose between {status.all()}')
 
         if new_status == status.c:
-            #res = OwnerC.ClassOwnerC.deleteOwner(owner_id)
+            res = OwnerC.ClassOwnerC.deleteOwner(owner_id, property_id)
             pass
             
         if new_status == status.a:
