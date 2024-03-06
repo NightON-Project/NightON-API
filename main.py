@@ -232,12 +232,32 @@ def changeStatusTenantDemand(
             
         if new_status == status.a:
             res = TenantC.ClassTenantC.validateTenant(tenant_id, property_id)
+    else:
+        res = 'Please provide tenant_id and/or new_status'
     return {'API rep': res}
 
 
-@app.get('/approvals/publication/{owner_id}')
-def changeStatusOwnerDemand(owner_id):
-    pass
+@app.get('/approvals/publication/{owner_id}/{property_id}/new_status')
+def changeStatusOwnerDemand(
+    owner_id,
+    property_id,
+    new_status):
+
+    if owner_id and new_status:
+        new_status = new_status.lower()
+        if new_status not in status.all():
+            raise HTTPException(status_code=401, detail=f'Wrong status. Choose between {status.all()}')
+
+        if new_status == status.c:
+            #res = OwnerC.ClassOwnerC.deleteOwner(owner_id)
+            pass
+            
+        if new_status == status.a:
+            # res = OwnerC.ClassOwnerC.validateOwner(owner_id, property_id)
+            pass
+    res = ''
+    return {'API rep': res}
+
 
 @app.post('/approvals/reservation/send_notification')
 def sendNotifToOwner():

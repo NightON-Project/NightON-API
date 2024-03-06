@@ -19,6 +19,8 @@ class ClassUserDataM(BaseModel):
     nom_rue: Optional[str] = ""
     complement_adresse_1: Optional[str] = ""
     complement_adresse_2: Optional[str] = ""
+    url1_piece: Optional[str] = ""
+    url2_piece: Optional[str] = ""
     # Ajoutez d'autres champs au besoin
 
     # add moyen de paiement

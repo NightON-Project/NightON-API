@@ -35,13 +35,14 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
         """
         print("- Requête insertion début ... ")
         try:
-            query = "INSERT INTO owners VALUES (%s, %s, %s, %s)"
+            query = "INSERT INTO owners VALUES (%s, %s, %s, %s, %s)"
             i = str(uuid.uuid4())
             values = (
                 i,
                 entity_instance.id_user,
                 entity_instance.status_demande,
                 entity_instance.date_demande,
+                entity_instance.email_user,
             )
 
             self.cur.execute(query, values)
@@ -74,6 +75,24 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
     # UPDATE
     def modifyOne(self, key, entity_instance):
         pass
+
+    def modifyStatus(self, key: str, new_status: str):
+        """Requete spéciale pour modifier le status d'une demande de publication.
+        :param key est id_owner
+        :param new_status est str dans la liste ['cancel', 'waiting' 'approved']
+        """
+        try:
+            query = """UPDATE owners SET status_demande=%s WHERE id_owner=%s"""
+            values = (new_status, key,)
+
+            self.cur.execute(query, values)
+            self.cur.commit()
+            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+        except Exception as e:
+            print(f"Erreur_OwnerDAO.modifyStatus() ::: {e}")
+            return f"Erreur_OwnerDAO.modifyStatus() ::: {e}"
+        finally:
+            self.cur.close()
 
     # DELETE
     def deleteOne(self, key):

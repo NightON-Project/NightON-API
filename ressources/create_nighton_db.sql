@@ -13,6 +13,9 @@ CREATE TABLE IF NOT EXISTS userdata(
     complement_adresse_1 VARCHAR(80), 
     complement_adresse_2 VARCHAR(80));
 
+ALTER TABLE `u169130812_nighton_test`.`userdata` ADD url1_piece VARCHAR(255);
+ALTER TABLE `u169130812_nighton_test`.`userdata` ADD url2_piece VARCHAR(255);
+
 CREATE TABLE IF NOT EXISTS login_table(
     email_user VARCHAR(80) PRIMARY KEY,
     code VARCHAR(5));

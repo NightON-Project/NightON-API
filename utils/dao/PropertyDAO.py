@@ -243,7 +243,7 @@ class ClassPropertyDAO(ModelDAO.ClassModeleDAO):
         except Exception as e:
             print(f"Error_PersonsDAO.findAll() ::: {e}")
 
-    def findOne(self, key) -> list:
+    def findOne(self, key) -> ClassPropertyM:
         """
         Trouver un bien par key.
         ---------------------
@@ -355,8 +355,8 @@ class ClassPropertyDAO(ModelDAO.ClassModeleDAO):
             self.cur.commit()
             return self.cur.rowcount if self.cur.rowcount!=0 else 0
         except Exception as e:
-            print(f"Erreur_UserDataDAO.modifyOne() ::: {e}")
-            return f"Erreur_UserDataDAO.modifyOne() ::: {e}"
+            print(f"Erreur_PropertyDAO.modifyOne() ::: {e}")
+            return f"Erreur_PropertyDAO.modifyOne() ::: {e}"
         finally:
             self.cur.close()
 
@@ -366,6 +366,24 @@ class ClassPropertyDAO(ModelDAO.ClassModeleDAO):
         -------------------------
         """
         pass
+
+    def modifyStatus(self, key: str, new_status: str):
+        """Requete spéciale pour modifier le status d'un logement.
+        :param key est id_property
+        :param new_status est str dans la liste ['dispo', 'pas dispo', 'en attende']
+        """
+        try:
+            query = """UPDATE properties_table SET availability_status=%s WHERE id_property=%s"""
+            values = (new_status, key,)
+
+            self.cur.execute(query, values)
+            self.cur.commit()
+            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+        except Exception as e:
+            print(f"Erreur_PropertyDAO.modifyStatus() ::: {e}")
+            return f"Erreur_PropertyDAO.modifyStatus() ::: {e}"
+        finally:
+            self.cur.close()
 
     # GRANT ACCESS TO NIGHTON API
     def createAPIUser(self, APIuser, pwd):

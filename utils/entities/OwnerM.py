@@ -10,15 +10,15 @@ class ClassOwnerM(BaseModel):
     """
     id_owner: Optional[str]
     id_user: str
-    status_demande: str
-    date_demande: str
-    email_user: str
+    status_demande: Optional[str] = "waiting"
+    date_demande: Optional[str] = "01-01-1900"
+    email_user: Optional[str]
     # Ajoutez d'autres champs au besoin
 
 
 class ClassOwnerRegisteringM(BaseModel):
     """
-    Données d'une demande de publication proprio.
+    Données à envoyer pour une demande de publication proprio.
     """
     email_user: Optional[str]
     nom: str
@@ -34,4 +34,6 @@ class ClassOwnerRegisteringM(BaseModel):
     date_demande: Optional[str] = "01-01-1900" # a revoir
     
     logements: list[ClassPropertyM] # peut ajouter plusieurs propriétés
+
+    date_demande: Optional[str] = "01-01-1900" # a revoir
     # Ajoutez d'autres champs au besoin

@@ -35,7 +35,8 @@ class ClassTenantC:
             objUserUpdated.code_postal = objIns.code_postal
             # et les complements adresse 1 et 2 ?
             # et le numero de telephone ?
-            #completer avec les urls des pieces ?
+            objUserUpdated.url1_piece = objIns.url_piece1
+            objUserUpdated.url2_piece = objIns.url_piece2
             res_update_user = ClassUserDataDAO().modifyOne(key=objIns.email_user, entity_instance=objUserUpdated)
             if res_update_user == 0:
                 return f'ERROR WHILE UPDATING USERDATA'
@@ -69,6 +70,10 @@ class ClassTenantC:
         except Exception as e:
             print(f'Erreur ClassTenantC.findOneTenant() :: {e}')
             return {'error': str(e)}
+
+    @staticmethod
+    def findAllWaitingTenants():
+        pass
 
     @staticmethod
     def validateTenant(id_tenant, id_property):
@@ -106,7 +111,13 @@ class ClassTenantC:
             res_act_rent = ClassRentalAgreementDAO().insertOne(entity_instance=contrat)
             if not res_act_rent:
                 return 'ERROR WHILE CREATING CONTRACT'
-            return contrat
+            
+            ### enfin mettre le status du logement sur pas dispo
+            res_status_property = ClassPropertyDAO().modifyStatus(key=res_property.id_property, new_status='pas dispo')
+            if res_status_property == 0:
+                return 'ERROR WHILE UPDATING PROPERTY STATUS'
+
+            return 'DEMANDE VALIDEE', contrat # ou contrat formatté # ou un msg généraqiue type 'DEMANDE VALIDEE'
         except Exception as e:
             print(f'Erreur ClassTenantC.validateTenant() :: {e}')
             return {'error': str(e)}
