@@ -78,8 +78,15 @@ class ClassTenantC:
     @staticmethod
     def validateTenant(id_tenant, id_property):
         """Valider une demande de reservation.
+            Fait dans cet ordre : 
+            - verifier existance de la demande
+            - mettre le status sur approved
+            - chercher le logement
+            - creer un contrat et enregistrer
+            - update le status du logement
         :param: tenant_id est id du demandeur
         :param: id_property est id du bien demandé.
+        :returns: Message erreur/succes. Si succes, envoie contrat aussi.
         """
         try:
             # verif que tenant_id existe dans la table
@@ -92,13 +99,13 @@ class ClassTenantC:
             updated_demand.status_demande = 'approved'
             res_bis = ClassTenantDAO().modifyOne(key=res.email_user, entity_instance=updated_demand)
             if not res_bis:
-                return 'ERROR WHILE UPDATING STATUS'
+                return 'ERROR WHILE UPDATING DEMAND STATUS.'
             
             # insert un nouveau act_rent
             ### chercher le logement à partir de son id
             res_property = ClassPropertyDAO().findOne(key=id_property)
             if not res_property:
-                return 'ERROR WHILE SEEKING PROPERTY'
+                return 'ERROR WHILE SEEKING PROPERTY.'
 
             contrat = ClassRentalAgreementM(
                 id_tenant = updated_demand.id_tenant,
@@ -117,7 +124,8 @@ class ClassTenantC:
             if res_status_property == 0:
                 return 'ERROR WHILE UPDATING PROPERTY STATUS'
 
-            return 'DEMANDE VALIDEE', contrat # ou contrat formatté # ou un msg généraqiue type 'DEMANDE VALIDEE'
+            return 'DEMANDE VALIDEE', contrat # ou contrat formatté pour envoyer au tenant et au owner. 
+                                              # ou utiliser le mailer direcetment ici.
         except Exception as e:
             print(f'Erreur ClassTenantC.validateTenant() :: {e}')
             return {'error': str(e)}

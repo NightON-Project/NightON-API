@@ -10,7 +10,7 @@ sys.path.insert(0, ENTITIES_FOLDER_PATH)
 from entities.UserDataM import ClassUserDataM
 from entities.OwnerM import ClassOwnerM
 
-class ClassTenantDAO(ModelDAO.ClassModeleDAO):
+class ClassOwnerDAO(ModelDAO.ClassModeleDAO):
     def __init__(self):
         """
         Initialise un objet UserDataDAO en établissant une connexion à la base de données.
@@ -66,8 +66,28 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
     def findAll(self) -> list:
         pass
 
-    def findAllByOne(self, key) -> list:
-        pass
+    def findAllByOne(self, key) -> ClassOwnerM:
+        """Trouver une demande par le owner_id."""
+        try:
+            query = """SELECT * FROM owners WHERE owner_id = %s"""
+            values = (key,)
+            self.cur.execute(query, values)
+            res = self.cur.fetchone()
+
+            if not res:
+                return None
+            else:
+                o = ClassOwnerM(
+                    id_owner = res[0],
+                    id_user = res[1],
+                    status_demande = res[2],
+                    date_demande = res[3],
+                    email_user = res[4]
+                )
+                return o
+        except Exception as e:
+            print(f"Erreur_OwnerDAO.findAllByOne() :: {e}")
+            return {'error': str(e)}
 
     def findAllByLike(self, key) -> list:
         pass

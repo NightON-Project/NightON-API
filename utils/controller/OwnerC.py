@@ -46,7 +46,7 @@ class ClassOwnerC:
                             date_demande=objIns.date_demande,
                             email_user=objIns.email_user)
 
-            res_owner = ClassTenantDAO().insertOne(entity_instance=objOwner)
+            res_owner = ClassOwnerDAO().insertOne(entity_instance=objOwner)
 
             # ensuite recup et sauvegarder les infos logement
             p_liste: list[ClassPropertyM] = objIns.logements
@@ -69,3 +69,57 @@ class ClassOwnerC:
             print(f'erreur_ClassOwnerC.addOneOwner() ::: {e}')
             return f'{e}'
     
+
+    @staticmethod
+    def findAllWaitingOwners():
+        pass
+
+
+    @staticmethod
+    def validateOwner(id_owner, id_property):
+        """
+        Valider une demande de publication.
+        Fait dans cet ordre:
+         - verifier existance de la demamnde
+         - mettre le status sur approved
+         - chercher le logement
+         - update le status du logement
+        :param id_owner: id du demandeur.
+        :param id_property: id du logement publié.
+        :returns: Message succes/erreur.
+        """
+        try:
+            res = ClassOwnerDAO().findAllByOne(key=id_owner)
+            if not res:
+                return 'AUCUNE DEMANDE DE PUBLICATION AVEC CET ID.'
+            
+            # update status de owner
+            updated_demand = res
+            updated_demand.status_demande = 'approved'
+            res_bis = ClassOwnerDAO().modifyOne(key=res.email_user, entity_instance=updated_demand)
+            if not res_bis:
+                return 'ERREUR WHILE UPDATING DEMAND STATUS.'
+        
+            res_property = ClassPropertyDAO().findOne(key=id_property)
+            if not res_property:
+                return 'ERROR WHILE SEEKING PROPERTY.'
+            
+            # update la dispo du logement.
+            res_status_property = ClassPropertyDAO().modifyStatus(key=res_property.id_property, new_status='dispo')
+            if res_status_property == 0:
+                return 'ERROR WHILE UPDATING PROPERTY STATUS.'
+            
+            return 'DEMANDE APPROUVEE.'
+
+        except Exception as e:
+            print(f'Erreur ClassOwnerC.validateOwner() :: {e}')
+            return {'error': str(e)}
+
+
+    @staticmethod
+    def deleteOwner():
+        """Supprimer une demande de publication. (juste changer le status à refuser
+            => on garde un historique.
+        :param owner_id:
+        )"""
+        pass
