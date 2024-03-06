@@ -62,6 +62,13 @@ class Mailer:
         Méthode qui a pour but d'envoyer un mail particulier puisqu'elle s'occupe aussi de générer un code aléatoire
         puis de le passer en paramètre à la fonction sendEmail.
         '''
+        import os
+        # récupérer le chemin du répertoire courant
+        path = os.getcwd()
+        print("Le répertoire courant est : " + path)
+        # récupérer le nom du répertoire courant
+        repn = os.path.basename(path)
+        print("Le nom du répertoire est : " + repn)
         code = randint(10000, 99999)
         return code, self.sendEmail(emailDestination, TITTLE_CODE_VERIF, HTML_FILE_CODE_VERIF, {"code" : code})
 
@@ -124,8 +131,9 @@ class Mailer:
         Lit le fichier html donné en entrée et renvoie le resultat sous forme d'une chaine de caractère et d'un booléen
         qui vérifie que l'opération s'est correctement déroulé.
         '''
+
         try:
-            buffer = open(f"mails/{mailFile}.html", 'rb')
+            buffer = open(f"./mailer/mails/{mailFile}.html", 'rb')
         except OSError:
             print(f"<NIGHTON_MAILER> : Impossible d'ouvrir le fichier mails/{mailFile}.html")
             return "", False
