@@ -1,0 +1,30 @@
+{
+  "API rep": [
+    {
+      "id_property": "property_1",
+      "nom_affichage": "Belle Maison",
+      "prix": 2500.0,
+      "date_dispo_debut": "2023-01-01",
+      "date_dispo_fin": "2023-12-31",
+      "category": "RP",
+      "ss_category": "Maison",
+      "proprio_infos": "testeur_1",
+      "url1": "https://exemple.com/image1.jpg",
+      "url2": "https://exemple.com/image2.jpg",
+      "url3": "https://exemple.com/image3.jpg"
+    },
+    {
+      "id_property": "property_2",
+      "nom_affichage": "Belle Villa avec Piscine en province",
+      "prix": 1500.0,
+      "date_dispo_debut": "2023-01-01",
+      "date_dispo_fin": "2024-12-31",
+      "category": "RS",
+      "ss_category": "Maison",
+      "proprio_infos": "testeur_1",
+      "url1": "https://exemple2.com/image1.jpg",
+      "url2": "https://exemple2.com/image2.jpg",
+      "url3": "https://exemple2.com/image3.jpg"
+    }
+  ]
+}
