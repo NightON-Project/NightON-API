@@ -83,3 +83,4 @@ fix owner C: enregistrer les infos d'un logement à la demand ede publication d'
 to do :
     test validation demande publication 
     test validation demande reservation
+    harmoniser les status
