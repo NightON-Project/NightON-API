@@ -6,6 +6,7 @@ class ClassUserDataM(BaseModel):
     """
     Classe qui valide les données utilisateur.
     """
+
     id_user: Optional[str] = ""
     firstname_user: str
     lastname_user: str
@@ -24,6 +25,6 @@ class ClassUserDataM(BaseModel):
     # Ajoutez d'autres champs au besoin
 
     # add moyen de paiement
-    
-    # 14/02/2024 : les tables Tenant et Owner 
+
+    # 14/02/2024 : les tables Tenant et Owner
     # enregistrent les demandes de résa et de pub

@@ -8,8 +8,8 @@ from utils.entities.TenantM import *
 from utils.entities.RentalAgreementM import *
 from utils.entities.PropertyM import *
 
-class ClassTenantC:
 
+class ClassTenantC:
     @staticmethod
     def addOneTenant(objIns: ClassTenantRegisteringM):
         """
@@ -18,11 +18,13 @@ class ClassTenantC:
         2. si user reconnu, crée une demande de reservation avec status = 'waiting'
         """
         try:
-            objUser: ClassUserDataM = ClassUserDataDAO().findAllByOne(key=objIns.email_user)
-            
+            objUser: ClassUserDataM = ClassUserDataDAO().findAllByOne(
+                key=objIns.email_user
+            )
+
             if objUser is None:
-                return 'UTILISATEUR NON ENREGISTRE'
-            
+                return "UTILISATEUR NON ENREGISTRE"
+
             objUserUpdated = objUser
             # mise à jour des attributs
             objUserUpdated.firstname_user = objIns.prenom
@@ -37,39 +39,42 @@ class ClassTenantC:
             # et le numero de telephone ?
             objUserUpdated.url1_piece = objIns.url_piece1
             objUserUpdated.url2_piece = objIns.url_piece2
-            res_update_user = ClassUserDataDAO().modifyOne(key=objIns.email_user, entity_instance=objUserUpdated)
+            res_update_user = ClassUserDataDAO().modifyOne(
+                key=objIns.email_user, entity_instance=objUserUpdated
+            )
             if res_update_user == 0:
-                return f'ERROR WHILE UPDATING USERDATA'
+                return f"ERROR WHILE UPDATING USERDATA"
 
-            objTenant = ClassTenantM(# id tenant est géré coté DAO
-                            id_user=objUser.id_user,
-                            status_demande=objIns.status_demande,
-                            date_demande=objIns.date_demande,
-                            email_user=objIns.email_user,
-                            id_property=objIns.id_logement,
-                            starting_date_demand=objIns.starting_date_demand,
-                            ending_date_demand=objIns.ending_date_demand)
+            objTenant = ClassTenantM(  # id tenant est géré coté DAO
+                id_user=objUser.id_user,
+                status_demande=objIns.status_demande,
+                date_demande=objIns.date_demande,
+                email_user=objIns.email_user,
+                id_property=objIns.id_logement,
+                starting_date_demand=objIns.starting_date_demand,
+                ending_date_demand=objIns.ending_date_demand,
+            )
 
             res_tenant_dmd = ClassTenantDAO().insertOne(entity_instance=objTenant)
             if res_tenant_dmd == 0:
-                return f'ERROR WHILE REGISTERING DEMAND'
+                return f"ERROR WHILE REGISTERING DEMAND"
             else:
-                return 'DEMANDE ENREGISTREE'
+                return "DEMANDE ENREGISTREE"
         except Exception as e:
-            print(f'erreur_ClassUserDataC.addOne() ::: {e}')
-            return f'{e}'
-    
-    @staticmethod   
+            print(f"erreur_ClassUserDataC.addOne() ::: {e}")
+            return f"{e}"
+
+    @staticmethod
     def findOneTenant(id):
         """Assert qu'un tenant_id existe bien dans la base."""
         try:
             res = ClassTenantDAO().findAllByOne(key=id)
             if not res:
-                return 'AUCUNE DEMANDE DE RESERVATION AVEC CET ID.'
+                return "AUCUNE DEMANDE DE RESERVATION AVEC CET ID."
             return res
         except Exception as e:
-            print(f'Erreur ClassTenantC.findOneTenant() :: {e}')
-            return {'error': str(e)}
+            print(f"Erreur ClassTenantC.findOneTenant() :: {e}")
+            return {"error": str(e)}
 
     @staticmethod
     def findAllWaitingTenants():
@@ -78,7 +83,7 @@ class ClassTenantC:
     @staticmethod
     def validateTenant(id_tenant, id_property):
         """Valider une demande de reservation.
-            Fait dans cet ordre : 
+            Fait dans cet ordre :
             - verifier existance de la demande
             - mettre le status sur approved
             - chercher le logement
@@ -92,48 +97,55 @@ class ClassTenantC:
             # verif que tenant_id existe dans la table
             res = ClassTenantDAO().findAllByOne(key=id_tenant)
             if not res:
-                return 'AUCUNE DEMANDE DE RESERVATION AVEC CET ID.'
-            
+                return "AUCUNE DEMANDE DE RESERVATION AVEC CET ID."
+
             # update le status de tenant
             updated_demand = res
-            updated_demand.status_demande = 'approved'
-            res_bis = ClassTenantDAO().modifyOne(key=res.email_user, entity_instance=updated_demand)
+            updated_demand.status_demande = "approved"
+            res_bis = ClassTenantDAO().modifyOne(
+                key=res.email_user, entity_instance=updated_demand
+            )
             if not res_bis:
-                return 'ERROR WHILE UPDATING DEMAND STATUS.'
-            
+                return "ERROR WHILE UPDATING DEMAND STATUS."
+
             # insert un nouveau act_rent
             ### chercher le logement à partir de son id
             res_property = ClassPropertyDAO().findOne(key=id_property)
             if not res_property:
-                return 'ERROR WHILE SEEKING PROPERTY.'
+                return "ERROR WHILE SEEKING PROPERTY."
 
             contrat = ClassRentalAgreementM(
-                id_tenant = updated_demand.id_tenant,
-                id_owner = res_property.id_owner,
-                id_property = updated_demand.id_property,
-                starting_date_act_rent = updated_demand.starting_date_demand,
-                ending_date_act_rent = updated_demand.ending_date_demand 
+                id_tenant=updated_demand.id_tenant,
+                id_owner=res_property.id_owner,
+                id_property=updated_demand.id_property,
+                starting_date_act_rent=updated_demand.starting_date_demand,
+                ending_date_act_rent=updated_demand.ending_date_demand,
             )
 
             res_act_rent = ClassRentalAgreementDAO().insertOne(entity_instance=contrat)
             if not res_act_rent:
-                return 'ERROR WHILE CREATING CONTRACT'
-            
-            ### enfin mettre le status du logement sur pas dispo
-            res_status_property = ClassPropertyDAO().modifyStatus(key=res_property.id_property, new_status='plus dispo')
-            if res_status_property == 0:
-                return 'ERROR WHILE UPDATING PROPERTY STATUS'
+                return "ERROR WHILE CREATING CONTRACT"
 
-            return 'DEMANDE VALIDEE', contrat # ou contrat formatté pour envoyer au tenant et au owner. 
-                                              # ou utiliser le mailer direcetment ici.
+            ### enfin mettre le status du logement sur pas dispo
+            res_status_property = ClassPropertyDAO().modifyStatus(
+                key=res_property.id_property, new_status="plus dispo"
+            )
+            if res_status_property == 0:
+                return "ERROR WHILE UPDATING PROPERTY STATUS"
+
+            return (
+                "DEMANDE VALIDEE",
+                contrat,
+            )  # ou contrat formatté pour envoyer au tenant et au owner.
+            # ou utiliser le mailer direcetment ici.
         except Exception as e:
-            print(f'Erreur ClassTenantC.validateTenant() :: {e}')
-            return {'error': str(e)}
+            print(f"Erreur ClassTenantC.validateTenant() :: {e}")
+            return {"error": str(e)}
 
     @staticmethod
     def deleteTenant(id):
-        """Supprimer une demande de reservation. 
-        Fait dans cet ordre : 
+        """Supprimer une demande de reservation.
+        Fait dans cet ordre :
             - changer le status de la demande à canceled => garder un historique.
         :param id is tenant_id.
         """
@@ -141,16 +153,18 @@ class ClassTenantC:
             # verif que tenant_id existe dans la table
             res = ClassTenantDAO().findAllByOne(key=id)
             if not res:
-                return 'AUCUNE DEMANDE DE RESERVATION AVEC CET ID.'
-            
+                return "AUCUNE DEMANDE DE RESERVATION AVEC CET ID."
+
             # update le status de tenant
             updated_demand = res
-            updated_demand.status_demande = 'canceled'
-            res_bis = ClassTenantDAO().modifyOne(key=res.email_user, entity_instance=updated_demand)
+            updated_demand.status_demande = "canceled"
+            res_bis = ClassTenantDAO().modifyOne(
+                key=res.email_user, entity_instance=updated_demand
+            )
             if not res_bis:
-                return 'ERROR WHILE UPDATING STATUS.'
-            
-            return 'DEMANDE ANNULEE'
+                return "ERROR WHILE UPDATING STATUS."
+
+            return "DEMANDE ANNULEE"
         except Exception as e:
-            print(f'Erreur ClassTenantC.deleteTenant() :: {e}')
-            return {'error': str(e)}
+            print(f"Erreur ClassTenantC.deleteTenant() :: {e}")
+            return {"error": str(e)}

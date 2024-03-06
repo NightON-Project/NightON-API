@@ -4,11 +4,12 @@ import uuid
 from utils.dao import ModelDAO
 
 CURRENT_FILEPATH = os.path.dirname(os.path.abspath(__file__))
-ENTITIES_FOLDER_PATH = os.path.join(CURRENT_FILEPATH, '..')
+ENTITIES_FOLDER_PATH = os.path.join(CURRENT_FILEPATH, "..")
 sys.path.insert(0, ENTITIES_FOLDER_PATH)
 
 from entities.UserDataM import ClassUserDataM
 from entities.TenantM import ClassTenantM
+
 
 class ClassTenantDAO(ModelDAO.ClassModeleDAO):
     def __init__(self):
@@ -16,14 +17,14 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
         Initialise un objet UserDataDAO en établissant une connexion à la base de données.
         """
         try:
-            print('- [UserDataDAO] Initialisation de la connexion ... ')
+            print("- [UserDataDAO] Initialisation de la connexion ... ")
             self.conn = ModelDAO.ClassModeleDAO.object_connection
-            print('- Obj connexion ok ... ')
+            print("- Obj connexion ok ... ")
             self.conn.reconnect()
             self.cur = self.conn.cursor()
-            print('-> Connexion ouverte ...\n -> En attente de requêtes ... ')
+            print("-> Connexion ouverte ...\n -> En attente de requêtes ... ")
         except Exception as e:
-            print('HERE ERROR ', e)
+            print("HERE ERROR ", e)
             raise e
 
     def insertOne(self, entity_instance: ClassTenantM) -> str:
@@ -52,15 +53,14 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
             self.conn.commit()  # fin de la transaction
             self.cur.close()
             self.conn.close()
-            print('- Requête insertion fin ... ')
-            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+            print("- Requête insertion fin ... ")
+            return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             self.cur.rollback()
             self.cur.close()
             self.conn.close()
             return f"Erreur_UserDataDAO.insertOne() ::: {e}"
             # annuler ttes les modifications non validées depuis le dernier commit()
-                  
 
     # SELECT
     def findOne(self, key) -> list:
@@ -82,19 +82,19 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
                 return None
             else:
                 t = ClassTenantM(
-                    id_tenant = res[0],
-                    id_user = res[1],
-                    status_demande = res[2],
-                    date_demande = res[3],
-                    email_user = res[4],
+                    id_tenant=res[0],
+                    id_user=res[1],
+                    status_demande=res[2],
+                    date_demande=res[3],
+                    email_user=res[4],
                     id_property=res[5],
                     starting_date_demand=res[6],
-                    ending_date_demand=res[7]
+                    ending_date_demand=res[7],
                 )
                 return t
         except Exception as e:
             print(f"Erreur_TenantDAO.findAllByOne() :: {e}")
-            return {"error": str(e)}            
+            return {"error": str(e)}
 
     def findAllByLike(self, key) -> list:
         pass
@@ -113,17 +113,16 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
                 entity_instance.id_property,
                 entity_instance.starting_date_demand,
                 entity_instance.ending_date_demand,
-                key
+                key,
             )
             self.cur.execute(query, values)
             self.cur.commit()
-            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+            return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             print(f"Erreur_TenantDAO.modifyOne() ::: {e}")
             return f"Erreur_TenantDAO.modifyOne() ::: {e}"
         finally:
             self.cur.close()
-
 
     # DELETE
     def deleteOne(self, key):
@@ -138,6 +137,3 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
 
     def grantAPIRole(self, APIuser, pwd):
         pass
-
-    
-

@@ -8,6 +8,7 @@ class ClassOwnerM(BaseModel):
     """
     Classe qui valide les données de proprio.
     """
+
     id_owner: Optional[str]
     id_user: str
     status_demande: Optional[str] = "waiting"
@@ -20,6 +21,7 @@ class ClassOwnerRegisteringM(BaseModel):
     """
     Données à envoyer pour une demande de publication proprio.
     """
+
     email_user: Optional[str]
     nom: str
     prenom: str
@@ -30,10 +32,10 @@ class ClassOwnerRegisteringM(BaseModel):
     code_postal: str
     url_piece1: str
     url_piece2: str
-    status_demande: str = 'waiting' # waiting or approved
-    date_demande: Optional[str] = "01-01-1900" # a revoir
-    
-    logements: list[ClassPropertyM] # peut ajouter plusieurs propriétés
+    status_demande: str = "waiting"  # waiting or approved
+    date_demande: Optional[str] = "01-01-1900"  # a revoir
 
-    date_demande: Optional[str] = "01-01-1900" # a revoir
+    logements: list[ClassPropertyM]  # peut ajouter plusieurs propriétés
+
+    date_demande: Optional[str] = "01-01-1900"  # a revoir
     # Ajoutez d'autres champs au besoin

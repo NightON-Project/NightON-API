@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from utils.dao.ConnexionDAO import ClassConnexionDB
 
+
 class ClassModeleDAO(ABC):
     object_connection = ClassConnexionDB().getConnexion()
 
@@ -50,18 +51,23 @@ class ClassModeleDAO(ABC):
     def grantAPIRole(self, APIuser, pwd):
         pass
 
-    def operationTable(self, query: str, values: tuple, error: str = 'Error_operationTable()'):
+    def operationTable(
+        self, query: str, values: tuple, error: str = "Error_operationTable()"
+    ):
         """
         Fonction générique pour executer des requetes sur des tables.
         """
         try:
-            self.cursor.execute(query, values,)  
+            self.cursor.execute(
+                query,
+                values,
+            )
             self.cursor.connection.commit()
 
             res = self.cursor.rowcount if self.cursor.rowcount != 0 else 0
-            if res != 0 and 'RETURNING' in query:
-                    res = self.cursor.fetchone()[0]
-                    
+            if res != 0 and "RETURNING" in query:
+                res = self.cursor.fetchone()[0]
+
             return res
         except Exception as e:
             print(f"{error} ::: {e}")

@@ -4,10 +4,11 @@ import uuid
 from utils.dao import ModelDAO
 
 CURRENT_FILEPATH = os.path.dirname(os.path.abspath(__file__))
-ENTITIES_FOLDER_PATH = os.path.join(CURRENT_FILEPATH, '..')
+ENTITIES_FOLDER_PATH = os.path.join(CURRENT_FILEPATH, "..")
 sys.path.insert(0, ENTITIES_FOLDER_PATH)
 
 from utils.entities.RentalAgreementM import ClassRentalAgreementM
+
 
 class ClassRentalAgreementDAO(ModelDAO.ClassModeleDAO):
     def __init__(self):
@@ -15,16 +16,15 @@ class ClassRentalAgreementDAO(ModelDAO.ClassModeleDAO):
         Initialise un objet RentalAgreementDAO en établissant une connexion à la base de données.
         """
         try:
-            print('- [PropertyDAO] Initialisation de la connexion ... ')
+            print("- [PropertyDAO] Initialisation de la connexion ... ")
             self.conn = ModelDAO.ClassModeleDAO.object_connection
-            print('- Obj connexion ok ... ')
+            print("- Obj connexion ok ... ")
             self.conn.reconnect()
             self.cur = self.conn.cursor()
-            print('-> Connexion ouverte ...\n -> En attente de requêtes ... ')
+            print("-> Connexion ouverte ...\n -> En attente de requêtes ... ")
         except Exception as e:
-            print('HERE ERROR ', e)
+            print("HERE ERROR ", e)
             raise e
-
 
     def insertOne(self, entity_instance: ClassRentalAgreementM) -> str:
         """
@@ -50,15 +50,14 @@ class ClassRentalAgreementDAO(ModelDAO.ClassModeleDAO):
             self.conn.commit()  # fin de la transaction
             self.cur.close()
             self.conn.close()
-            print('- Requête insertion fin ... ')
-            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+            print("- Requête insertion fin ... ")
+            return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             self.cur.rollback()
             self.cur.close()
             self.conn.close()
             return f"Erreur_UserDataDAO.insertOne() ::: {e}"
             # annuler ttes les modifications non validées depuis le dernier commit()
-                  
 
     # SELECT
     def findOne(self, key) -> list:
@@ -73,7 +72,7 @@ class ClassRentalAgreementDAO(ModelDAO.ClassModeleDAO):
             pass
         except Exception as e:
             print(f"Erreur_ActRentDAO.findAllByOne() :: {e}")
-            return {"error": str(e)}            
+            return {"error": str(e)}
 
     def findAllByLike(self, key) -> list:
         pass
@@ -89,7 +88,6 @@ class ClassRentalAgreementDAO(ModelDAO.ClassModeleDAO):
         finally:
             self.cur.close()
 
-
     # DELETE
     def deleteOne(self, key):
         pass
@@ -103,4 +101,3 @@ class ClassRentalAgreementDAO(ModelDAO.ClassModeleDAO):
 
     def grantAPIRole(self, APIuser, pwd):
         pass
-

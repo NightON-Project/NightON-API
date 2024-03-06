@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 from typing import Optional
 
+
 class ClassRentalAgreementM(BaseModel):
     id_contrat: Optional[str]
     id_tenant: str
@@ -10,6 +11,7 @@ class ClassRentalAgreementM(BaseModel):
     starting_date_act_rent: str
     ending_date_act_rent: str
 
+
 class ClassRentalAgreementOverviewM(BaseModel):
-    # pour afficher les ttes les infos contrats 
+    # pour afficher les ttes les infos contrats
     pass

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
+
 class ClassPropertyOverviewM(BaseModel):
     id_property: str
     nom_affichage: str
@@ -17,24 +18,24 @@ class ClassPropertyOverviewM(BaseModel):
 
 class ClassPropertyDetailsM(BaseModel):
     """Equivaut pratiquement à ClassPropertyM sauf le legal"""
-    pass    
+
+    pass
 
 
-class ClassPropertyM(BaseModel):    
-    
+class ClassPropertyM(BaseModel):
     # general : 8
     id_property: str
     nom_affichage: str
-    prix: float 
-    availabilty_status: str # field validator ou enum {dispo, reservé, plus dispo, en attente, supprimee}
-    date_dispo_debut: str #
-    date_dispo_fin: str #
-    category: str # (RP, Terrain, RS)
-    ss_category: str # (Maison, Appart)
-    
+    prix: float
+    availabilty_status: str  # field validator ou enum {dispo, reservé, plus dispo, en attente, supprimee}
+    date_dispo_debut: str  #
+    date_dispo_fin: str  #
+    category: str  # (RP, Terrain, RS)
+    ss_category: str  # (Maison, Appart)
+
     # details global 17
-    nbre_pieces: int # 1 - 100 int
-    nbre_rooms: int # 1-100 int
+    nbre_pieces: int  # 1 - 100 int
+    nbre_rooms: int  # 1-100 int
     sup_totale_m2: float
     has_bathroom: bool
     nbre_bathrooms: int
@@ -51,7 +52,7 @@ class ClassPropertyM(BaseModel):
     has_climatiseur: bool
     has_place_parking: bool
     has_objets_cassables: bool
-    descr_complementaire: str #texte à remplir VARCHAR(5000)
+    descr_complementaire: str  # texte à remplir VARCHAR(5000)
 
     # images 10
     url1: str
@@ -74,11 +75,11 @@ class ClassPropertyM(BaseModel):
     complement_adresse_1: Optional[str] = ""
     complement_adresse_2: Optional[str] = ""
 
-    # legal 7 
+    # legal 7
     nighton_caution: Optional[bool] = False
     nighton_caution_id: Optional[str] = ""
     id_owner: str
-    confirmation_mairie : bool
-    n0_declaration_meuble_mairie : str # ou int jsp
-    assert_is_RP : bool
-    assert_is_RS : bool
+    confirmation_mairie: bool
+    n0_declaration_meuble_mairie: str  # ou int jsp
+    assert_is_RP: bool
+    assert_is_RS: bool
