@@ -35,7 +35,7 @@ app.add_middleware(
 )
 
 
-@app.get("/", response_model=dict)
+@app.get("/v1.0.0", response_model=dict)
 async def start(req: Request):
     """
     Point de départ de nightON API.
