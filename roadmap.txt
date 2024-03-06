@@ -64,9 +64,14 @@ date dispo fin
 - modifier le status d'une propriété suite à la validation d'une demande de resa ok
 
 17-02
-fix bdd : add urls pieces to userdata table
+fix bdd : add urls pieces to userdata table (cf *)
 fix owner C: enregistrer les infos d'un logement à la demand ede publication d'un owner 
 
 ? validate owner demand
 ? find all waiting tenant
 ? find all waiting owners
+
+
+06-03 : logique de publication
+- demande publication 
+

@@ -233,16 +233,16 @@ def changeStatusTenantDemand(
         if new_status == status.a:
             res = TenantC.ClassTenantC.validateTenant(tenant_id, property_id)
     else:
-        res = 'Please provide tenant_id and/or new_status'
+        res = 'Please provide tenant_id and/or new_status.'
     return {'API rep': res}
 
 
-@app.get('/approvals/publication/{owner_id}/{property_id}/new_status')
+@app.get('/approvals/publication/{owner_id}/{property_id}/{new_status}')
 def changeStatusOwnerDemand(
     owner_id,
     property_id,
-    new_status):
-
+    new_status
+    ):
     if owner_id and new_status:
         new_status = new_status.lower()
         if new_status not in status.all():
@@ -253,9 +253,9 @@ def changeStatusOwnerDemand(
             pass
             
         if new_status == status.a:
-            # res = OwnerC.ClassOwnerC.validateOwner(owner_id, property_id)
-            pass
-    res = ''
+            res = OwnerC.ClassOwnerC.validateOwner(owner_id, property_id)
+    else:     
+        res = 'Please provide owner_id and/or new_status.'
     return {'API rep': res}
 
 

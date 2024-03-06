@@ -131,9 +131,9 @@ class ClassTenantC:
             return {'error': str(e)}
 
     @staticmethod
-    def deleteTenant():
+    def deleteTenant(id):
         """Supprimer une demande de reservation. (juste changer le status à refuser => garder un historique.)
-        :param: tenant_id
+        :param id is tenant_id.
         """
         try:
             # verif que tenant_id existe dans la table
@@ -146,7 +146,7 @@ class ClassTenantC:
             updated_demand.status_demande = 'canceled'
             res_bis = ClassTenantDAO().modifyOne(key=res.email_user, entity_instance=updated_demand)
             if not res_bis:
-                return 'ERROR WHILE UPDATING STATUS'
+                return 'ERROR WHILE UPDATING STATUS.'
             
             return 'DEMANDE ANNULEE'
         except Exception as e:

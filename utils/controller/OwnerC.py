@@ -117,9 +117,24 @@ class ClassOwnerC:
 
 
     @staticmethod
-    def deleteOwner():
+    def deleteOwner(id):
         """Supprimer une demande de publication. (juste changer le status à refuser
             => on garde un historique.
         :param owner_id:
         )"""
-        pass
+        try:
+            res = ClassOwnerDAO().findAllByOne(key=id)
+            if not res:
+                return 'AUCUNE DEMANDE DE PUBLICATION AVEC CET ID.'
+            
+            updated_demand = res
+            updated_demand.status_demande = 'canceled'
+            res_bis = ClassOwnerDAO().modifyOne(key=res.email_user, entity_instance=updated_demand)
+            if not res_bis:
+                return 'ERROR WHILE UPDATING STATUS.'
+            return 'DEMANDE ANNULEE.'
+
+        except Exception as e:
+            print(f'Erreur ClassOwnerC.deleteOwner() :: {e}')
+            return {'error': str(e)}
+        
