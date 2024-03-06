@@ -98,6 +98,32 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
     def findAllByLike(self, key) -> list:
         pass
 
+    def findAllWaiting(self):
+        try:
+            key = 'waiting'
+            query = """SELECT * FROM tenants WHERE status_demande = %s """
+            values = (key,)
+            self.cur.execute(query, values)
+            res = self.cur.fetchall()
+            list_pending_dmd = []
+            if len(res) > 0:
+                for d in res:
+                    demand = ClassTenantM(
+                        id_tenant=d[0],
+                        id_user=d[1],
+                        status_demande=d[2],
+                        date_demande=d[3],
+                        email_user=d[4],
+                        id_property=d[5],
+                        starting_date_demand=d[6],
+                        ending_date_demand=d[7]
+                    )
+                    list_pending_dmd.append(demand)
+            return list_pending_dmd
+        except Exception as e:
+            print(f'Erreur_TenantDAO.findAllByOne() :: {e}')
+            return {"error": str(e)}
+
     # UPDATE
     def modifyOne(self, key, entity_instance):
         """Mettre à jour le status d'une demande par l'email_user."""

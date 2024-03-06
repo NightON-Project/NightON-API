@@ -295,6 +295,18 @@ def changeStatusOwnerDemand(owner_id, property_id, new_status):
     return {"API rep": res}
 
 
+@app.get("/approvals/publication/show_all")
+def showAllDmdPubli():
+    res = OwnerC.ClassOwnerC.findAllWaitingOwners()
+    return {"API rep": res}
+
+
+@app.get("/approvals/reservation/show_all")
+def showAllDmdResa():
+    res = TenantC.ClassTenantC.findAllWaitingTenants()
+    return {"API rep": res}
+
+
 @app.post("/approvals/reservation/send_notification")
 def sendNotifToOwner():
     """Envoyer un mail de notification aux proprio qd il ya une demande de resa."""

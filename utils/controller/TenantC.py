@@ -80,7 +80,12 @@ class ClassTenantC:
 
     @staticmethod
     def findAllWaitingTenants():
-        pass
+        try:
+            res = ClassTenantDAO().findAllWaiting()
+            return res
+        except Exception as e:
+            print(f"Erreur_TenantC.findAllWaitingTenants() :: {e}")
+            return f"Erreur_TenantC.findAllWaitingTenants() :: {e}"
 
     @staticmethod
     def validateTenant(id_tenant, id_property):
