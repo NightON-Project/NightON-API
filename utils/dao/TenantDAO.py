@@ -17,7 +17,7 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
         Initialise un objet UserDataDAO en établissant une connexion à la base de données.
         """
         try:
-            print("- [UserDataDAO] Initialisation de la connexion ... ")
+            print("- [TenantDAO] Initialisation de la connexion ... ")
             self.conn = ModelDAO.ClassModeleDAO.object_connection
             print("- Obj connexion ok ... ")
             self.conn.reconnect()
@@ -51,16 +51,15 @@ class ClassTenantDAO(ModelDAO.ClassModeleDAO):
 
             self.cur.execute(query, values)
             self.conn.commit()  # fin de la transaction
-            self.cur.close()
-            self.conn.close()
             print("- Requête insertion fin ... ")
             return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
-            self.cur.rollback()
+            #self.cur.rollback()
+            return f"Erreur_TenantDAO.insertOne() ::: {e}"
+            # annuler ttes les modifications non validées depuis le dernier commit()
+        finally:
             self.cur.close()
             self.conn.close()
-            return f"Erreur_UserDataDAO.insertOne() ::: {e}"
-            # annuler ttes les modifications non validées depuis le dernier commit()
 
     # SELECT
     def findOne(self, key) -> list:

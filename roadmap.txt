@@ -73,5 +73,7 @@ fix owner C: enregistrer les infos d'un logement à la demand ede publication d'
 
 
 06-03 : logique de publication
-- demande publication 
+- demande publication + validation demande ok
+- test demande resa : avait pb de id (ne pas mettre d'id avec un underscore sinon qd est réutilisé en cookie, 
+    le split fonctionne mal.)
 

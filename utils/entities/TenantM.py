@@ -9,10 +9,10 @@ class ClassTenantM(BaseModel):
 
     id_tenant: Optional[str]
     id_user: str
-    status_demande: str
+    status_demande: Optional[str] = 'waiting' # gere dans TenantC
     date_demande: str
     email_user: str
-    id_property: str
+    id_property: Optional[str] = "" # geré dans main
     starting_date_demand: str = "31-01-1900"
     ending_date_demand: str = "02-01-1900"
     # Ajoutez d'autres champs au besoin

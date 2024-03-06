@@ -42,26 +42,28 @@ class ClassTenantC:
             res_update_user = ClassUserDataDAO().modifyOne(
                 key=objIns.email_user, entity_instance=objUserUpdated
             )
+            #print(objUserUpdated)
             if res_update_user == 0:
                 return f"ERROR WHILE UPDATING USERDATA"
 
             objTenant = ClassTenantM(  # id tenant est géré coté DAO
+                id_tenant='tenant_0000',
                 id_user=objUser.id_user,
-                status_demande=objIns.status_demande,
+                status_demande='waiting',
                 date_demande=objIns.date_demande,
                 email_user=objIns.email_user,
                 id_property=objIns.id_logement,
                 starting_date_demand=objIns.starting_date_demand,
                 ending_date_demand=objIns.ending_date_demand,
             )
-
             res_tenant_dmd = ClassTenantDAO().insertOne(entity_instance=objTenant)
-            if res_tenant_dmd == 0:
-                return f"ERROR WHILE REGISTERING DEMAND"
-            else:
+
+            if res_tenant_dmd == 1:
                 return "DEMANDE ENREGISTREE"
+            else:
+                return res_tenant_dmd
         except Exception as e:
-            print(f"erreur_ClassUserDataC.addOne() ::: {e}")
+            print(f"erreur_ClassUserDataC.addOneTenant() ::: {e}")
             return f"{e}"
 
     @staticmethod

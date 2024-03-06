@@ -64,7 +64,7 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
             print("- Requête insertion fin ... ")
             return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
-            self.cur.rollback()
+            #self.cur.rollback()
             self.cur.close()
             self.conn.close()
             return f"Erreur_UserDataDAO.insertOne() ::: {e}"
@@ -134,7 +134,7 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
         @return: dict {"error"|"message": ...}
         """
         try:
-            query = "UPDATE userdata SET firstname_user=%s, lastname_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE email_user=%s"
+            query = "UPDATE userdata SET firstname_user=%s, lastname_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s, url1_piece=%s, url2_piece=%s WHERE email_user=%s"
             values = (
                 entity_instance.firstname_user,
                 entity_instance.lastname_user,
@@ -148,11 +148,13 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
                 entity_instance.nom_rue,
                 entity_instance.complement_adresse_1,
                 entity_instance.complement_adresse_2,
+                entity_instance.url1_piece,
+                entity_instance.url2_piece,
                 key,
             )
 
             self.cur.execute(query, values)
-            self.cur.commit()
+            self.conn.commit()
             return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             print(f"Erreur_UserDataDAO.modifyOne() ::: {e}")

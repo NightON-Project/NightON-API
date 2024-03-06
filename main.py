@@ -85,7 +85,7 @@ async def loginAuthentification(email_user: str, code: str, response: Response):
         )
     # !! a modif apres pour sécu :: hash reversible, jwt token
     response.set_cookie(
-        key="connected_cookie", value=f"yes_{email_user}", expires=3 * 60
+        key="connected_cookie", value=f"yes_{email_user}", expires=60 * 60
     )
     return {"API rep": f"Bienvenue {email_user} !"}
 
@@ -174,7 +174,6 @@ async def registerTenant(
     """
     Créer une nouvelle demande pour être locataire.
     On a un statut 'waiting' au départ
-    Ensuite une fois valide passe à : 'approved'
     """
     if current_property_cookie is None:
         raise HTTPException(
@@ -186,7 +185,7 @@ async def registerTenant(
 
     # email stocké dans le cookie
     email_user = connected_cookie.split("_")[-1]
-    id_property = current_property_cookie.split("_")[-1]
+    id_property = current_property_cookie.split("@")[-1]
     # me = UserDataC.ClassUserDataC.findOneByEmail(email_user)
     # identifie le user dans la bdd, retourne UTILISATEUR NON ENREGISTRE si mauvais cookie
     new_tenant.email_user = email_user
@@ -233,7 +232,7 @@ async def displayPropertyDetails(nom_property: str, response: Response):
         nom_affichage=nom_property
     )
     response.set_cookie(
-        key="current_property_cookie", value=f"prop_{id_property}", expires=10 * 60
+        key="current_property_cookie", value=f"prop@{id_property}", expires=60* 60
     )
     return {"API rep": res}
 
