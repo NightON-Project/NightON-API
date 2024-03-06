@@ -6,14 +6,19 @@ from utils.entities.UserDataM import *
 from utils.entities.OwnerM import *
 from utils.entities.PropertyM import *
 
+import uuid
+
 
 class ClassOwnerC:
     @staticmethod
     def addOneOnwer(objIns: ClassOwnerRegisteringM):
         """
         Ajoute les données d'un nouveau owner.
-        1. identifie le user dans la bdd, retourne UTILISATEUR NON ENREGISTRE si mauvais email
-        2. si user reconnu, crée une demande de reservation avec status = 'waiting'
+        Fais dans cet ordre :
+            1. identifie le user dans la bdd, retourne UTILISATEUR NON ENREGISTRE si mauvais email
+            2. MAJ les user data
+            3. Crée une demande de publication avec status = 'waiting'
+            4. Enregistre la property avec status_de_disponibilité = 'en attente/waiting' (va chercher l'id du owner)
         """
         try:
             objUser: ClassUserDataM = ClassUserDataDAO().findAllByOne(
@@ -43,7 +48,8 @@ class ClassOwnerC:
             if res_update_user == 0:
                 return f"ERROR WHILE UPDATING USERDATA"
 
-            objOwner = ClassOwnerM(  # id owner est géré coté DAO
+            objOwner = ClassOwnerM(  # id owner est géré coté DAO si non renseigné 
+                id_owner=str(uuid.uuid4()),
                 id_user=objUser.id_user,
                 status_demande=objIns.status_demande,
                 date_demande=objIns.date_demande,
@@ -58,7 +64,9 @@ class ClassOwnerC:
             for p in p_liste:
                 # les logements sont déjà des instances de ClassPropertyM
                 # donc on peut les insérer directement avec le DAO Property après avoir mis le availabiliy_status sur 'waiting'
-                p.availabilty_status = "en attente"
+                p.availabilty_status = "waiting"
+                # update avec le id_owner généré lors de l'enregistrement de la demande.
+                p.id_owner = objOwner.id_owner
                 res_p = ClassPropertyDAO().insertOne(entity_instance=p)
                 # valider au fur et à mesure
                 if res_p == 0:

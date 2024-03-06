@@ -66,6 +66,9 @@ async def loginRequest(email_user: str):
     Envoie un code dans l'email.
     """
     res = UserDataC.ClassUserDataC.loginRequest(email_user)
+    if res:
+        # si res est null -> tt s'est bien passé.
+        return {"API rep": res}
     return {"API rep": "Vérifiez le mail envoyé."}
 
 
@@ -203,8 +206,7 @@ async def registerOwner(
 ):
     """
     Créer une nouvelle demande pour publier son logement.
-    On a un statut 'waiting' au départ
-    Ensuite une fois valide passe à : 'approved'
+    On a un statut 'waiting' au départ.
     """
     if connected_cookie is None:
         raise HTTPException(status_code=403, detail="Please connect before.")

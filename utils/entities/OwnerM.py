@@ -22,7 +22,7 @@ class ClassOwnerRegisteringM(BaseModel):
     Données à envoyer pour une demande de publication proprio.
     """
 
-    email_user: Optional[str]
+    email_user: Optional[str] = ""
     nom: str
     prenom: str
     date_naissance: str

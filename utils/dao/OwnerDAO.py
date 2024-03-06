@@ -37,9 +37,10 @@ class ClassOwnerDAO(ModelDAO.ClassModeleDAO):
         print("- Requête insertion début ... ")
         try:
             query = "INSERT INTO owners VALUES (%s, %s, %s, %s, %s)"
-            i = str(uuid.uuid4())
+            if not entity_instance.id_owner:
+                entity_instance.id_owner = str(uuid.uuid4())
             values = (
-                i,
+                entity_instance.id_owner,
                 entity_instance.id_user,
                 entity_instance.status_demande,
                 entity_instance.date_demande,

@@ -76,4 +76,10 @@ fix owner C: enregistrer les infos d'un logement à la demand ede publication d'
 - demande publication + validation demande ok
 - test demande resa : avait pb de id (ne pas mettre d'id avec un underscore sinon qd est réutilisé en cookie, 
     le split fonctionne mal.)
+- ajout d'une route pour afficher les demandes de résa en attente (utile pour l'interface proprio) ou le sys admin
+- test demande publication
 
+
+to do :
+    test validation demande publication 
+    test validation demande reservation
