@@ -52,3 +52,35 @@ status : {dispo, reservé, plus dispo}
 date dispo debut
 date dispo fin
 
+--------------------
+15-02
+- demande de reservation + validation d'une demande reservation ok sauf *
+
+- * mettre à jour les infos d'un tenant à la demande de resa ~ almost ok (depend du formulaire+manque les peices dans les userdata)
+- mettre à jour les infos d'un publieur à la demande de mise en ligne ok
+
+- recup l'id d'un owner à partir d'un id_property ok (se fait avec model property) ok
+
+- modifier le status d'une propriété suite à la validation d'une demande de resa ok
+
+17-02
+fix bdd : add urls pieces to userdata table (cf *)
+fix owner C: enregistrer les infos d'un logement à la demand ede publication d'un owner 
+
+? validate owner demand
+? find all waiting tenant
+? find all waiting owners
+
+
+06-03 : logique de publication
+- demande publication + validation demande ok
+- test demande resa : avait pb de id (ne pas mettre d'id avec un underscore sinon qd est réutilisé en cookie, 
+    le split fonctionne mal.)
+- ajout d'une route pour afficher les demandes de résa en attente (utile pour l'interface proprio) ou le sys admin
+- test demande publication
+
+
+to do :
+    test validation demande publication 
+    test validation demande reservation
+    harmoniser les status

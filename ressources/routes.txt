@@ -1,0 +1,45 @@
+Fichier tmp pour décrire le fonctionnement des routes (get/post/...)
+
+- page d'acceuil avec les aperçus :
+    /acceuil
+
+- pour voir les détails d'une maison ou d'un terrain :
+    /acceuil/{nom_property}
+
+- pour s'inscrire 
+    /register
+
+- pour se connecter avec google (email verifié par Google) 
+    /login/auth/from_firebase/{email_user} : donne directement le cookie connecté
+
+- pour se connecter simple (en 2 étapes) 
+    /login/request/{email_user} : envoie un code à 5 chiffres
+    /login/auth/{email_user}/{code} : pour avoir le cookie coonecté 
+
+- si le cookie connecté est présent, affiche le profil user
+    /auth_users/display_me 
+    
+-  on peut aussi afficher un message de bienvenue sur la base du prénom du user.   
+    /auth_users/welcome 
+
+- pour valider ou annuler une demande de résa
+    /approvals/reservation/{property_id}/{tenant_id}/{new_status}
+
+- pour valider ou annuler une demande de publication
+    /approvals/publication/{owner_id}/{property_id}/{new_status}
+
+- pour voir toutes les demandes de réservation en attente 
+    /approvals/reservation/show_all
+
+- pour voir toutes les demandes de publication en attente
+    /approvals/publication/show_all
+
+--------------------- METHODES POST -------------------------------
+- /auth_users/update/me
+- /users/demande_publication
+- /users/demande_reservation
+
+
+---------------------- AUTRES -------------------------------
+- supprimer un user :
+    /auth_users/delete/{email_user}

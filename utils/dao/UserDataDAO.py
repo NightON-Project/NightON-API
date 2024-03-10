@@ -4,10 +4,11 @@ import uuid
 from utils.dao import ModelDAO
 
 CURRENT_FILEPATH = os.path.dirname(os.path.abspath(__file__))
-ENTITIES_FOLDER_PATH = os.path.join(CURRENT_FILEPATH, '..')
+ENTITIES_FOLDER_PATH = os.path.join(CURRENT_FILEPATH, "..")
 sys.path.insert(0, ENTITIES_FOLDER_PATH)
 
 from entities.UserDataM import ClassUserDataM
+
 
 class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
     def __init__(self):
@@ -15,18 +16,18 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
         Initialise un objet UserDataDAO en établissant une connexion à la base de données.
         """
         try:
-            print('- [UserDataDAO] Initialisation de la connexion ... ')
+            print("- [UserDataDAO] Initialisation de la connexion ... ")
             self.conn = ModelDAO.ClassModeleDAO.object_connection
-            print('- Obj connexion ok ... ')
-            #print(type(self.conn))
-            #print(self.conn.__dict__)
+            print("- Obj connexion ok ... ")
+            # print(type(self.conn))
+            # print(self.conn.__dict__)
             self.conn.reconnect()
             self.cur = self.conn.cursor()
-            #print(type(self.cur))
-            #print(self.cur.__dict__)
-            print('-> Connexion ouverte ...\n -> En attente de requêtes ... ')
+            # print(type(self.cur))
+            # print(self.cur.__dict__)
+            print("-> Connexion ouverte ...\n -> En attente de requêtes ... ")
         except Exception as e:
-            print('HERE ERROR ', e)
+            print("HERE ERROR ", e)
             raise e
 
     def insertOne(self, entity_instance: ClassUserDataM) -> str:
@@ -60,15 +61,14 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
             self.conn.commit()  # fin de la transaction
             self.cur.close()
             self.conn.close()
-            print('- Requête insertion fin ... ')
-            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+            print("- Requête insertion fin ... ")
+            return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
-            self.cur.rollback()
+            #self.cur.rollback()
             self.cur.close()
             self.conn.close()
             return f"Erreur_UserDataDAO.insertOne() ::: {e}"
             # annuler ttes les modifications non validées depuis le dernier commit()
-            
 
     def findAllByOne(self, key: str) -> list:
         """
@@ -83,23 +83,21 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
 
             self.cur.execute(query, values)
             res = self.cur.fetchone()
-            #print(f"HERE {res}")
+            # print(f"HERE {res}")
 
             if not res:
                 return None
             else:
                 u = ClassUserDataM(
-                    firstname_user = res[1],
-                    lastname_user = res[2],
-                    email_user = res[4]
+                    firstname_user=res[1], lastname_user=res[2], email_user=res[4]
                 )
-                #assert isinstance(u, ClassUserDataM), f"ERRERU ICI"
-                #print('HERE2 ', u)
+                # assert isinstance(u, ClassUserDataM), f"ERRERU ICI"
+                # print('HERE2 ', u)
                 u.id_user = res[0]
-                #u.firstname_user = res[1]
-                #u.lastname_user = res[2]
+                # u.firstname_user = res[1]
+                # u.lastname_user = res[2]
                 u.birthdate_user = res[3]
-                #u.email_user = res[4]
+                # u.email_user = res[4]
                 u.telephone_user = res[5]
                 u.pays = res[6]
                 u.code_postal = res[7]
@@ -108,12 +106,12 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
                 u.nom_rue = res[10]
                 u.complement_adresse_1 = res[11]
                 u.complement_adresse_2 = res[12]
-                
-                #print('HERE 3', u)
+
+                # print('HERE 3', u)
             return u
         except Exception as e:
             print(f"Erreur_UserDataDAO.findAllByOne() ::: {e}")
-            #raise e
+            # raise e
             return {"error": str(e)}
         finally:
             self.cur.close()
@@ -132,11 +130,11 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
         update user par key (email).
         ----------------------
         @params: key : clé du prédicat : est email_user
-        @params: entity_instance : est objet ClassUserDataM 
+        @params: entity_instance : est objet ClassUserDataM
         @return: dict {"error"|"message": ...}
         """
         try:
-            query = "UPDATE userdata SET firstname_user=%s, lastname_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s WHERE email_user=%s"
+            query = "UPDATE userdata SET firstname_user=%s, lastname_user=%s, birthdate_user=%s, email_user=%s, telephone_user=%s, pays=%s, code_postal=%s, ville=%s, numero_rue=%s, nom_rue=%s, complement_adresse_1=%s, complement_adresse_2=%s, url1_piece=%s, url2_piece=%s WHERE email_user=%s"
             values = (
                 entity_instance.firstname_user,
                 entity_instance.lastname_user,
@@ -150,12 +148,14 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
                 entity_instance.nom_rue,
                 entity_instance.complement_adresse_1,
                 entity_instance.complement_adresse_2,
-                key
+                entity_instance.url1_piece,
+                entity_instance.url2_piece,
+                key,
             )
 
             self.cur.execute(query, values)
-            self.cur.commit()
-            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+            self.conn.commit()
+            return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             print(f"Erreur_UserDataDAO.modifyOne() ::: {e}")
             return f"Erreur_UserDataDAO.modifyOne() ::: {e}"
@@ -191,34 +191,40 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
         pass
 
     # specials
-    def loginTableInsert(self, email:str, code:str):
+    def loginTableInsert(self, email: str, code: str):
         try:
             query = "INSERT INTO login_table VALUES (%s, %s)"
-            values = (email, code,)
+            values = (
+                email,
+                code,
+            )
 
             self.cur.execute(query, values)
             self.conn.commit()  # fin de la transaction
             self.cur.close()
             self.conn.close()
-            print('- Requête insertion fin ... ')
-            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+            print("- Requête insertion fin ... ")
+            return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             self.cur.rollback()
             self.cur.close()
             self.conn.close()
             return f"Erreur_UserDataDAO.loginTableInsert() ::: {e}"
 
-    def loginTableUpdateCode(self, code:str, email:str):
+    def loginTableUpdateCode(self, code: str, email: str):
         try:
             query = "UPDATE login_table SET code=%s WHERE email_user=%s"
-            values = (code, email,)
+            values = (
+                code,
+                email,
+            )
 
             self.cur.execute(query, values)
             self.conn.commit()  # fin de la transaction
             self.cur.close()
             self.conn.close()
-            print('- Requête màj fin ... ')
-            return self.cur.rowcount if self.cur.rowcount!=0 else 0
+            print("- Requête màj fin ... ")
+            return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             self.cur.rollback()
             self.cur.close()
@@ -232,11 +238,10 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
 
             self.cur.execute(query, values)
             res = self.cur.fetchone()
-            #print(res)
+            # print(res)
             return res
         except Exception as e:
             print(f"Erreur_UserDataDAO.loginTableRead() ::: {e}")
             return {"error": str(e)}
         finally:
-            self.cur.close()        
-        
+            self.cur.close()
