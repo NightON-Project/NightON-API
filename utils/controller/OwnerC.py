@@ -105,9 +105,10 @@ class ClassOwnerC:
 
             # update status de owner
             updated_demand = res
+            print(updated_demand)
             updated_demand.status_demande = "approved"
-            res_bis = ClassOwnerDAO().modifyOne(
-                key=res.email_user, entity_instance=updated_demand
+            res_bis = ClassOwnerDAO().modifyStatus(
+                key=res.id_owner, new_status='approved'
             )
             if not res_bis:
                 return "ERREUR WHILE UPDATING DEMAND STATUS."

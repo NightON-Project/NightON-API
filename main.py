@@ -58,8 +58,26 @@ async def start():
 async def registerUser(user_data: UserDataM.ClassUserDataM):
     """
     Créer nouvel utilisateur.
+    --------------------------------------
+    {"id_user": "",
+    "firstname_user": "Joel",
+    "lastname_user": "Duval",
+    "birthdate_user": "",
+    "email_user": "titouchkpoubelle@gmail.com",
+    "telephone_user": "",
+    "pays": "",
+    "code_postal": "",
+    "ville": "",
+    "numero_rue": "",
+    "nom_rue": "",
+    "complement_adresse_1": "",
+    "complement_adresse_2": "",
+    "url1_piece": "",
+    "url2_piece": ""}
     """
     res = UserDataC.ClassUserDataC.addOneUser(obj_user=user_data)
+    if res=="USER ALREADY EXISTS":
+        raise HTTPException(status_code=500, detail="UTILISATEUR EXISTE DEJA.")
     return {"API rep": res}
 
 
@@ -97,18 +115,35 @@ async def loginAuthentification(email_user: str, code: str, response: Response):
     return {"API rep": f"Bienvenue {email_user} !"}
 
 
-@app.get("/login/auth/from_firebase/{email_user}", tags=["Connexion"])
+@app.get("/auth/from_firebase/{email_user}", tags=["Connexion"])
 async def firebaseLoginAuthentification(email_user: str, response: Response):
     """
-    FAIRE UNE ROUTE POUR LES CAS FIREBASE
-    SI EMAIL VERIFIé ROUTE PAREILLE SS CODE
+    Route pour les cas firebase.
+    Pas de distinction entre register et login car email déjà certifié.
+    Pas de code.
     Authentification utilisateur en passant par firebase.
     ----------------------------
-    @param email : email utilisateur.
-    @return : session id.
+    :param email : email utilisateur.
+    :return : session id.
+    ----------------------------
+    {"id_user": "",
+    "firstname_user": "",
+    "lastname_user": "",
+    "birthdate_user": "",
+    "email_user": "titouan.scht@gmail.com",
+    "telephone_user": "",
+    "pays": "",
+    "code_postal": "",
+    "ville": "",
+    "numero_rue": "",
+    "nom_rue": "",
+    "complement_adresse_1": "",
+    "complement_adresse_2": "",
+    "url1_piece": "",
+    "url2_piece": ""}
     """
+    # verifier existance.
     res = UserDataC.ClassUserDataC.loginAuth(email_user, from_firebase=True)
-    print("HERE", res)
     if not res:
         # si non creer compte juste à partir de l'adresse mail + noms fictifs (modif après)
         user_data = UserDataM.ClassUserDataM(
@@ -117,7 +152,7 @@ async def firebaseLoginAuthentification(email_user: str, response: Response):
         UserDataC.ClassUserDataC.addOneUser(obj_user=user_data)
     # !! a modif apres pour sécu :: hash reversible, jwt token
     response.set_cookie(
-        key="connected_cookie", value=f"yes_{email_user}", expires=3 * 60
+        key="connected_cookie", value=f"yes_{email_user}", expires=60 * 60
     )
     return {"API rep": f"Bienvenue {email_user} !"}
 
@@ -149,13 +184,29 @@ async def funcWelcomeUser(
     return {"API rep": f"Bienvenue à toi {current_user.firstname_user} !"}
 
 
-@app.post("/auth_users/update/me", tags=["Profil Utilisateur"])
+@app.post("/auth_users/update_me", tags=["Profil Utilisateur"])
 async def updateUserProfil(
     new_user: UserDataM.ClassUserDataM,
     current_user: Annotated[UserDataC.ClassUserDataM, Security(funcGetMe)],
 ):
     """
     Mettre à jour un profil utilisateur.
+    -------------------------------------------
+    {"id_user": "",
+    "firstname_user": "Youssef",
+    "lastname_user": "LUser0000",
+    "birthdate_user": "",
+    "email_user": "titouan.scht@gmail.com",
+    "telephone_user": "",
+    "pays": "",
+    "code_postal": "",
+    "ville": "",
+    "numero_rue": "",
+    "nom_rue": "",
+    "complement_adresse_1": "",
+    "complement_adresse_2": "",
+    "url1_piece": "",
+    "url2_piece": ""}
     """
     res = UserDataC.ClassUserDataC.updateUserData(obj_user=new_user)
     return {"API rep": res}
@@ -251,11 +302,11 @@ from enum import Enum
 class status(Enum):
     c = "cancel"
     w = "waiting"
-    a = "approved"
+    a = "approve"
 
     @classmethod
     def all(cls):
-        return [status.a.value, status.b.value, status.c.value, status.d.value]
+        return [status.a.value, status.w.value, status.c.value]#, status.d.value]
 
 
 # send mail to proprio
@@ -291,11 +342,10 @@ def changeStatusOwnerDemand(owner_id, property_id, new_status):
                 status_code=401, detail=f"Wrong status. Choose between {status.all()}"
             )
 
-        if new_status == status.c:
+        if new_status == 'canceled':
             res = OwnerC.ClassOwnerC.deleteOwner(owner_id, property_id)
-            pass
 
-        if new_status == status.a:
+        if new_status == 'approve':
             res = OwnerC.ClassOwnerC.validateOwner(owner_id, property_id)
     else:
         res = "Please provide owner_id and/or new_status."

@@ -345,7 +345,7 @@ class ClassPropertyDAO(ModelDAO.ClassModeleDAO):
             )
 
             self.cur.execute(query, values)
-            self.cur.commit()
+            self.conn.commit()
             return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             print(f"Erreur_PropertyDAO.modifyOne() ::: {e}")
@@ -373,7 +373,7 @@ class ClassPropertyDAO(ModelDAO.ClassModeleDAO):
             )
 
             self.cur.execute(query, values)
-            self.cur.commit()
+            self.conn.commit()
             return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             print(f"Erreur_PropertyDAO.modifyStatus() ::: {e}")

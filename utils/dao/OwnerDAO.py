@@ -70,7 +70,7 @@ class ClassOwnerDAO(ModelDAO.ClassModeleDAO):
     def findAllByOne(self, key) -> ClassOwnerM:
         """Trouver une demande par le owner_id."""
         try:
-            query = """SELECT * FROM owners WHERE owner_id = %s"""
+            query = """SELECT * FROM owners WHERE id_owner = %s"""
             values = (key,)
             self.cur.execute(query, values)
             res = self.cur.fetchone()
@@ -110,7 +110,7 @@ class ClassOwnerDAO(ModelDAO.ClassModeleDAO):
             )
 
             self.cur.execute(query, values)
-            self.cur.commit()
+            self.conn.commit()
             return self.cur.rowcount if self.cur.rowcount != 0 else 0
         except Exception as e:
             print(f"Erreur_OwnerDAO.modifyStatus() ::: {e}")
