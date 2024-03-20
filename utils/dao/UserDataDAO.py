@@ -39,7 +39,7 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
         """
         print("- Requête insertion début ... ")
         try:
-            query = "INSERT INTO userdata VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            query = "INSERT INTO userdata VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             i = str(uuid.uuid4())
             values = (
                 i,
@@ -55,6 +55,8 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
                 entity_instance.nom_rue,
                 entity_instance.complement_adresse_1,
                 entity_instance.complement_adresse_2,
+                entity_instance.url1_piece,
+                entity_instance.url2_piece,
             )
 
             self.cur.execute(query, values)
@@ -106,7 +108,8 @@ class ClassUserDataDAO(ModelDAO.ClassModeleDAO):
                 u.nom_rue = res[10]
                 u.complement_adresse_1 = res[11]
                 u.complement_adresse_2 = res[12]
-
+                u.url1_piece = res[13]
+                u.url2_piece = res[14]
                 # print('HERE 3', u)
             return u
         except Exception as e:

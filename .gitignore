@@ -1,7 +1,9 @@
 _old/*
 .idea/*
 .ruff_cache/*
-ressources/secret/*.json
+ressources/secret/*
+ressources/config/db_config.json
+ressources/config/.env
 venv/
 env/
 .env/

@@ -21,7 +21,11 @@ from typing import Annotated
 from utils.auth.auth_bearer import token_required
 from utils.auth.auth_handler import generateJWT
 
-app = FastAPI()
+app = FastAPI(
+    title="NightON-API",
+    description="RestAPI qui fait le pont entre les applications clientes et la bdd.",
+    version="1.0.0",
+)
 
 # Configuration CORS pour gérer les accès au web service
 # middleware : fonction qui s'exécute à chaque appel d'un endpoint
@@ -35,8 +39,8 @@ app.add_middleware(
 )
 
 
-@app.get("/v1.0.0", response_model=dict)
-async def start(req: Request):
+@app.get("/", response_model=dict, tags=['Entrypoint'])
+async def start():
     """
     Point de départ de nightON API.
     """
@@ -50,7 +54,7 @@ async def start(req: Request):
     }
 
 
-@app.post("/register", tags=["step One"])
+@app.post("/register", tags=["Creation de compte"])
 async def registerUser(user_data: UserDataM.ClassUserDataM):
     """
     Créer nouvel utilisateur.
@@ -59,7 +63,7 @@ async def registerUser(user_data: UserDataM.ClassUserDataM):
     return {"API rep": res}
 
 
-@app.get("/login/request/{email_user}", tags=["step One"])
+@app.get("/login/request/{email_user}", tags=["Connexion"])
 async def loginRequest(email_user: str):
     """
     Demande de login utilisateur.
@@ -72,7 +76,7 @@ async def loginRequest(email_user: str):
     return {"API rep": "Vérifiez le mail envoyé."}
 
 
-@app.get("/login/auth/{email_user}/{code}", tags=["step One"])
+@app.get("/login/auth/{email_user}/{code}", tags=["Connexion"])
 async def loginAuthentification(email_user: str, code: str, response: Response):
     """
     Authentification utilisateur.
@@ -93,7 +97,7 @@ async def loginAuthentification(email_user: str, code: str, response: Response):
     return {"API rep": f"Bienvenue {email_user} !"}
 
 
-@app.get("/login/auth/from_firebase/{email_user}", tags=["step One"])
+@app.get("/login/auth/from_firebase/{email_user}", tags=["Connexion"])
 async def firebaseLoginAuthentification(email_user: str, response: Response):
     """
     FAIRE UNE ROUTE POUR LES CAS FIREBASE
@@ -119,7 +123,7 @@ async def firebaseLoginAuthentification(email_user: str, response: Response):
 
 
 ### PROFIL
-@app.get("/auth_users/display_me")
+@app.get("/auth_users/display_me", tags=["Profil Utilisateur"])
 def funcGetMe(connected_cookie: Annotated[str, Cookie()] = None):
     """
     Se base sur le cookie connecté pour afficher les userData de l'utilisateur.
@@ -133,7 +137,7 @@ def funcGetMe(connected_cookie: Annotated[str, Cookie()] = None):
     return me
 
 
-@app.get("/auth_users/welcome", tags=["protected endpoints"])
+@app.get("/auth_users/welcome", tags=["Connexion"])
 # mettre une dépendance a loginAuth
 async def funcWelcomeUser(
     current_user: Annotated[UserDataC.ClassUserDataM, Security(funcGetMe)]
@@ -145,7 +149,7 @@ async def funcWelcomeUser(
     return {"API rep": f"Bienvenue à toi {current_user.firstname_user} !"}
 
 
-@app.post("/auth_users/update/me", tags=["UsersData"])
+@app.post("/auth_users/update/me", tags=["Profil Utilisateur"])
 async def updateUserProfil(
     new_user: UserDataM.ClassUserDataM,
     current_user: Annotated[UserDataC.ClassUserDataM, Security(funcGetMe)],
@@ -157,16 +161,17 @@ async def updateUserProfil(
     return {"API rep": res}
 
 
-@app.delete("/auth_users/delete/{email_user}", tags=["UsersData"])
+@app.delete("/auth_users/delete/{email_user}", tags=["Profil Utilisateur"])
 async def deleteUser(email_user: str):
     """
     Supprimer utilisateur.
+    TODO
     """
     return "Not ready"
 
 
 ######### DEMANDES CLIENT ############
-@app.post("/users/demande_reservation", tags=["Tenants"])
+@app.post("/users/demande_reservation", tags=["Reservation logement"])
 # on peut récupérer son email de son cookie de connexion
 # il faudrait pouvoir récupérer l'id_property
 async def registerTenant(
@@ -198,7 +203,7 @@ async def registerTenant(
     return {"API rep": res}
 
 
-@app.post("/users/demande_publication", tags=["Owners"])
+@app.post("/users/demande_publication", tags=["Publication logement"])
 # on devrait pouvoir récupérer son email de son cookie de connexion
 async def registerOwner(
     new_owner: OwnerM.ClassOwnerRegisteringM,
@@ -218,14 +223,14 @@ async def registerOwner(
 
 
 ####### BIENS A LOUER ##############
-@app.get("/accueil", tags=["Properties"])
+@app.get("/accueil", tags=["Page accueil"])
 async def displayAll():
     """Affichage par defaut, overview des logements."""
     res = PropertyC.ClassPropertyC.displayAll()
     return {"API rep": res}
 
 
-@app.get("/accueil/{nom_property}")
+@app.get("/accueil/{nom_property}", tags=["Page accueil"])
 async def displayPropertyDetails(nom_property: str, response: Response):
     """Afficher les details d'un logement par son nom.
     Btw placer un cookie qui correspond au logement current.
@@ -256,7 +261,7 @@ class status(Enum):
 # send mail to proprio
 # validate owner
 # validate tenant -> create contrat
-@app.get("/approvals/reservation/{property_id}/{tenant_id}/{new_status}")
+@app.get("/approvals/reservation/{property_id}/{tenant_id}/{new_status}", tags=["SysAdmin-Validation/Refus demande"])
 def changeStatusTenantDemand(
     tenant_id: str = None, property_id: str = None, new_status: str = None
 ):
@@ -277,7 +282,7 @@ def changeStatusTenantDemand(
     return {"API rep": res}
 
 
-@app.get("/approvals/publication/{owner_id}/{property_id}/{new_status}")
+@app.get("/approvals/publication/{owner_id}/{property_id}/{new_status}", tags=["SysAdmin-Validation/Refus demande"])
 def changeStatusOwnerDemand(owner_id, property_id, new_status):
     if owner_id and new_status:
         new_status = new_status.lower()
@@ -297,26 +302,26 @@ def changeStatusOwnerDemand(owner_id, property_id, new_status):
     return {"API rep": res}
 
 
-@app.get("/approvals/publication/show_all")
+@app.get("/approvals/publication/show_all", tags=["SysAdmin-Validation/Refus demande"])
 def showAllDmdPubli():
     res = OwnerC.ClassOwnerC.findAllWaitingOwners()
     return {"API rep": res}
 
 
-@app.get("/approvals/reservation/show_all")
+@app.get("/approvals/reservation/show_all", tags=["SysAdmin-Validation/Refus demande"])
 def showAllDmdResa():
     res = TenantC.ClassTenantC.findAllWaitingTenants()
     return {"API rep": res}
 
 
-@app.post("/approvals/reservation/send_notification")
+@app.post("/approvals/reservation/send_notification", tags=["SysAdmin-Validation/Refus demande"])
 def sendNotifToOwner():
     """Envoyer un mail de notification aux proprio qd il ya une demande de resa."""
     content = ""
     pass
 
 
-@app.post("/approvals/reservation/send_notification")
+@app.post("/approvals/reservation/send_notification", tags=["SysAdmin-Validation/Refus demande"])
 def sendNotifToTenant():
     """Envoyer un mail de confirmation avec un certain contenu."""
     content = ""

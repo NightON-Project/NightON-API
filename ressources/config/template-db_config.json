@@ -1,0 +1,26 @@
+{
+    "use": "test",
+    "local" : 
+    {
+        "host": "",
+        "port": "",
+        "user": "",
+        "password": "",
+        "database": ""
+    },
+    "test" : {
+      "host" : "",
+      "port" : "",
+      "user" : "",
+      "password" : "",
+      "database" : ""
+    },
+    "dev" : {
+      "host" : "",
+      "port" : "",
+      "user" : "",
+      "password" : "",
+      "database" : ""
+    }
+}
+  

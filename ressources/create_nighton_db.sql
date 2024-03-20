@@ -11,10 +11,12 @@ CREATE TABLE IF NOT EXISTS userdata(
     numero_rue VARCHAR(80), 
     nom_rue VARCHAR(80), 
     complement_adresse_1 VARCHAR(80), 
-    complement_adresse_2 VARCHAR(80));
+    complement_adresse_2 VARCHAR(80),
+    url1_piece VARCHAR(255),
+    url2_piece VARCHAR(255));
 
-ALTER TABLE `u169130812_nighton_test`.`userdata` ADD url1_piece VARCHAR(255);
-ALTER TABLE `u169130812_nighton_test`.`userdata` ADD url2_piece VARCHAR(255);
+--ALTER TABLE `u169130812_nighton_test`.`userdata` ADD url1_piece VARCHAR(255);
+--ALTER TABLE `u169130812_nighton_test`.`userdata` ADD url2_piece VARCHAR(255);
 
 CREATE TABLE IF NOT EXISTS login_table(
     email_user VARCHAR(80) PRIMARY KEY,
@@ -28,12 +30,14 @@ CREATE TABLE IF NOT EXISTS tenants(
     status_demande VARCHAR(80),
     date_demande VARCHAR(80),
     id_property VARCHAR(255),
-    CONSTRAINT fk_id_properties_table_tenants FOREIGN KEY(id_property) REFERENCES properties_table(id_property) ON DELETE CASCADE
+    starting_date_demand VARCHAR(80),
+    ending_date_demand VARCHAR(80),
+    CONSTRAINT fk_id_properties_table_tenants FOREIGN KEY(id_property) REFERENCES properties_table(id_property) ON DELETE CASCADE,
     CONSTRAINT fk_userdata_tenants FOREIGN KEY(id_user) REFERENCES userdata(id_user) ON DELETE CASCADE
 );
 
-ALTER TABLE `u169130812_nighton_test`.`tenants` ADD starting_date_demand VARCHAR(80);
-ALTER TABLE `u169130812_nighton_test`.`tenants` ADD ending_date_demand VARCHAR(80);
+--ALTER TABLE `u169130812_nighton_test`.`tenants` ADD starting_date_demand VARCHAR(80);
+--ALTER TABLE `u169130812_nighton_test`.`tenants` ADD ending_date_demand VARCHAR(80);
 
 
 CREATE TABLE IF NOT EXISTS owners(

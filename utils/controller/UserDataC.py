@@ -40,7 +40,7 @@ class ClassUserDataC:
             res = ClassUserDataDAO().insertOne(entity_instance=obj_user)
 
             if res == 0:
-                return f"ERROR"
+                return "ERROR 1"
             else:
                 return "DONNEES ENREGISTREES"
         except Exception as e:
