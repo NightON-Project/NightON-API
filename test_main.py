@@ -38,7 +38,26 @@ testeurs_userdata = [
     }
 ]
 
-testeur_tenant = []
+testeur_tenant = [
+    {
+  "email_user": "",
+  "nom": "Joel",
+  "prenom": "Duval",
+  "date_naissance": "19-03-2023",
+  "numero_rue": "02",
+  "nom_rue": "Square Thiers",
+  "ville": "Paris",
+  "code_postal": "75016",
+  "url_piece1": "https://www.petiterepublique.com/wp-content/uploads/2017/02/changement-identite-paul.jpeg",
+  "url_piece2": "https://www.petiterepublique.com/wp-content/uploads/2017/02/changement-identite-paul.jpeg",
+  "status_demande": "waiting",
+  "date_demande": "20-03-2024",
+  "id_logement": "",
+  "starting_date_demand": "15-04-2024",
+  "ending_date_demand": "20-04-2024"
+}
+]
+
 
 testeur_owner = [
     {

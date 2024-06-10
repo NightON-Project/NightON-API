@@ -1,5 +1,9 @@
 # NightON-API
 
+#### Overview - How does it work ? 
+
+[![Watch the video](https://drive.google.com/file/d/15VuX9ndF0lRk1IgQGgXh4nxVQuyemc8B/view?usp=drive_link)
+
 ##### Après avoir cloné ce repos :
 - Dans la racine, créez un environnement virtuel : 
 ```
