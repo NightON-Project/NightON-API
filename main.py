@@ -281,18 +281,19 @@ async def displayAll():
     return {"API rep": res}
 
 
-@app.get("/accueil/{nom_property}", tags=["Page accueil"])
-async def displayPropertyDetails(nom_property: str, response: Response):
-    """Afficher les details d'un logement par son nom.
+@app.get("/accueil/{id_property}", tags=["Page accueil"])
+async def displayPropertyDetails_2(id_property: str, response: Response):
+    """Afficher les details d'un logement par son id.
     Btw placer un cookie qui correspond au logement current.
     """
-    res, id_property = PropertyC.ClassPropertyC.displayPropertyByName(
-        nom_affichage=nom_property
+    res = PropertyC.ClassPropertyC.displayPropertyById(
+        id=id_property
     )
     response.set_cookie(
         key="current_property_cookie", value=f"prop@{id_property}", expires=60* 60
     )
     return {"API rep": res}
+
 
 
 ######## ADMIN: VALIDATION DES DEMANDES ##########
