@@ -4,7 +4,7 @@ from utils.dao.ConnexionDAO import ClassConnexionDB
 
 class ClassModeleDAO(ABC):
     object_connection = ClassConnexionDB().getConnexion()
-
+    object_connection.cursor().execute('USE nighton_db')
     # Opérations CRUD abstraites
     # INSERT
     @abstractmethod

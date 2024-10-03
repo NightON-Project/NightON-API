@@ -1,4 +1,3 @@
-from utils.entities.UserDataM import ClassUserDataM
 from utils.entities.PropertyM import ClassPropertyM
 from pydantic import BaseModel
 from typing import Optional

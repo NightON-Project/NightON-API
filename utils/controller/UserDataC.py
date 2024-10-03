@@ -1,4 +1,3 @@
-import uuid
 from utils.dao.UserDataDAO import *
 from utils.entities.UserDataM import *
 
@@ -77,7 +76,7 @@ class ClassUserDataC:
                 key=obj_user.email_user, entity_instance=obj_user
             )
             if res == 0:
-                return f"ERROR"
+                return "ERROR"
             else:
                 return "DONNEES ENREGISTREES"
         except Exception as e:
@@ -128,7 +127,7 @@ class ClassUserDataC:
                         code=code_value, email=res.email_user
                     )
                 else:
-                    print(f"Erreur_UserDataC.loginRequest()")
+                    print("Erreur_UserDataC.loginRequest()")
         except Exception as e:
             print(f"Erreur_UserDataC.loginRequest() ::: {e}")
 

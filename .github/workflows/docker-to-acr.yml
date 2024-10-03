@@ -1,0 +1,37 @@
+name: Build and Push Docker Image to Azure ACR
+
+on:
+  push:
+    branches:
+      - main # migration_azciwp
+  workflow_dispatch:  # Allows manual triggering of the workflow
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to Azure CLI using Service Principal
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Step 3: Log in to Azure Container Registry (ACR)
+      - name: Log in to Azure Container Registry
+        run: |
+          az acr login --name ${{ secrets.ACR_NAME }}
+
+      # Step 4: Build the Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/myapp:latest .
+
+      # Step 5: Push Docker image to ACR
+      - name: Push Docker image to ACR
+        run: |
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/myapp:latest

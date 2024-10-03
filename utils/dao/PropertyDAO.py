@@ -126,7 +126,7 @@ class ClassPropertyDAO(ModelDAO.ClassModeleDAO):
         :returns: objet property.
         """
         try:
-            query = f"""SELECT * FROM properties_table WHERE availability_status = 'dispo' AND nom_affichage = %s"""
+            query = """SELECT * FROM properties_table WHERE availability_status = 'dispo' AND nom_affichage = %s"""
             values = (key,)
 
             self.cur.execute(query, values)
@@ -244,7 +244,7 @@ class ClassPropertyDAO(ModelDAO.ClassModeleDAO):
         :returns: objet property.
         """
         try:
-            query = f"""SELECT * FROM properties_table WHERE id_property = %s"""
+            query = """SELECT * FROM properties_table WHERE id_property = %s"""
             values = (key,)
 
             self.cur.execute(query, values)

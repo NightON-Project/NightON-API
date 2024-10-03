@@ -44,7 +44,7 @@ class ClassTenantC:
             )
             #print(objUserUpdated)
             if res_update_user == 0:
-                return f"ERROR WHILE UPDATING USERDATA"
+                return "ERROR WHILE UPDATING USERDATA"
 
             objTenant = ClassTenantM(  # id tenant est géré coté DAO
                 id_tenant='tenant_0000',

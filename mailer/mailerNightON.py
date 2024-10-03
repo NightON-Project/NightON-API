@@ -1,4 +1,3 @@
-import time
 from time import sleep
 from threading import Thread
 from smtplib import SMTP_SSL
@@ -6,7 +5,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from random import randint
 from json import load
-from typing import Optional
 
 # Base email for code verification
 TITTLE_CODE_VERIF = "NightON : Code de Vérification {code}"

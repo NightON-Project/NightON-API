@@ -1,25 +1,34 @@
 import uvicorn
-import sys
 from fastapi import (
     FastAPI,
-    Depends,
     HTTPException,
     Response,
     Cookie,
     Security,
     status,
-    Request,
-    Header,
+    Request
 )
-from fastapi.security import HTTPBasic, HTTPBasicCredentials, OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
-from utils.entities import UserDataM, TenantM, PropertyM, OwnerM
+from utils.entities import UserDataM, TenantM, OwnerM
 from utils.controller import UserDataC, TenantC, PropertyC, OwnerC
+from utils.controller import migrationC
 
 from typing import Annotated
 
-from utils.auth.auth_bearer import token_required
-from utils.auth.auth_handler import generateJWT
+import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+from opencensus.ext.azure.trace_exporter import AzureExporter
+from opencensus.trace.samplers import ProbabilitySampler
+from opencensus.ext.fastapi.fastapi_middleware import FastAPIMiddleware
+
+
+# Replace this with your Application Insights Instrumentation Key
+INSTRUMENTATION_KEY = "ad620840-70fa-4c64-af49-cfbe1f81e141"
+
+# Set up logging to Azure Application Insights
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(AzureLogHandler(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'))
 
 app = FastAPI(
     title="NightON-API",
@@ -38,19 +47,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Set up tracing with Azure Application Insights
+app.add_middleware(
+    FastAPIMiddleware,
+    exporter=AzureExporter(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'),
+    sampler=ProbabilitySampler(1.0),  # 1.0 = 100% sampling rate, you can reduce for lower load.
+)
 
 @app.get("/", response_model=dict, tags=['Entrypoint'])
 async def start():
     """
     Point de départ de nightON API.
     """
+    logger.info("Received request to /")
+
+    try:
+        migrationC.run_migration(dbname="nighton_db")
+        state = "ready"
+        logger.info("Database ready !")
+    except Exception as e:
+        state = "K.O."
+        logger.info(f"Database K.O : an error occured : {e}")
     return {
         "Message pour vous": "Bonjour cher développeur, bienvenue dans la politique de confidentialité de nightON",
-        "Politique de confidentialité": "A voir",
+        "Politique de confidentialité": "A venir",
         "Dernière màj": "06/03/2024",
         #'header': req.headers.get('authorization'), # enlever
         #"API Key": generateJWT(role_id="nightOnWebSiteApp"),
-        "API Key": 'Not available.'
+        "API Key": 'Not available.',
+        "DB STATE": state
     }
 
 
@@ -381,3 +406,4 @@ def sendNotifToTenant():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)  # , reload=True)
+    #uvicorn.run(app, host="0.0.0.0", port=8000)  # , reload=True)

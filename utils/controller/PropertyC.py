@@ -9,7 +9,7 @@ class ClassPropertyC:
             res = ClassPropertyDAO().insertOne(obj)
             # check if name is available before anthg because name will be used as key to display one
             if res == 0:
-                return f"ERROR"
+                return "ERROR"
             else:
                 return "DONNEES ENREGISTREES"
         except Exception as e:

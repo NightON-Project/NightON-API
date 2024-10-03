@@ -8,7 +8,7 @@ class ClassConnexionDB:
         self.params = None
         self.__PATH_TO_DB_CONFIG: str = "./ressources/config/db_config.json"
 
-    def getConnexion(self, MODE="test"):
+    def getConnexion(self, MODE="azgf_dev"):
         """
         Configuration de la connexion à la base de données  SQL.
         Les configs sont dans un json.

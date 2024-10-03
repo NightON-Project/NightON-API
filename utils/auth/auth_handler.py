@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Dict
 import jwt
-from decouple import config
 
 JWT_SECRET = "no_temp_secret"  # config('secret')
 JWT_ALGORITHM = "HS256"  # config('algorithm')

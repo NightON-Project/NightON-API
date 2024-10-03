@@ -1,14 +1,12 @@
 import os
 import sys
 import uuid
-import time
 from utils.dao import ModelDAO
 
 CURRENT_FILEPATH = os.path.dirname(os.path.abspath(__file__))
 ENTITIES_FOLDER_PATH = os.path.join(CURRENT_FILEPATH, '..')
 sys.path.insert(0, ENTITIES_FOLDER_PATH)
 
-from entities.UserDataM import ClassUserDataM
 from entities.SessionInfoM import ClassSessionInfoM
 
 class ClassSessionInfoDAO(ModelDAO.ClassModeleDAO):

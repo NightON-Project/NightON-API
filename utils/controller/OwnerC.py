@@ -46,7 +46,7 @@ class ClassOwnerC:
                 key=objIns.email_user, entity_instance=objUserUpdated
             )
             if res_update_user == 0:
-                return f"ERROR WHILE UPDATING USERDATA"
+                return "ERROR WHILE UPDATING USERDATA"
 
             objOwner = ClassOwnerM(  # id owner est géré coté DAO si non renseigné 
                 id_owner=str(uuid.uuid4()),
@@ -71,10 +71,10 @@ class ClassOwnerC:
                 # valider au fur et à mesure
                 if res_p == 0:
                     print(f"Erreur_OwnerC.addOneOwner() :: {res_p}")
-                    return f"ERROR WITH PROPERTIE(S)"
+                    return "ERROR WITH PROPERTIE(S)"
 
             if res_owner == 0:
-                return f"ERROR WHILE REGISTERING OWNER"
+                return "ERROR WHILE REGISTERING OWNER"
             else:
                 return "DEMANDE ENREGISTREE"
         except Exception as e:
