@@ -3,7 +3,7 @@ name: Build and Push Docker Image to Azure ACR
 on:
   push:
     branches:
-      - main # migration_azciwp
+      - migration_azciwp
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
