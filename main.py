@@ -23,7 +23,7 @@ from opencensus.ext.fastapi.fastapi_middleware import FastAPIMiddleware
 
 
 # Replace this with your Application Insights Instrumentation Key
-INSTRUMENTATION_KEY = "ad620840-70fa-4c64-af49-cfbe1f81e141"
+INSTRUMENTATION_KEY = ""
 
 # Set up logging to Azure Application Insights
 logger = logging.getLogger(__name__)
